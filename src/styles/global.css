@@ -1,0 +1,7 @@
+.ant-layout {
+  min-height: 100%;
+}
+.yy-row {
+  display: flex;
+  flex-wrap: wrap;
+}

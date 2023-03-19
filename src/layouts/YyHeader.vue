@@ -1,29 +1,23 @@
 <template>
   <div class="header">
-    <div>
+    <div class="top-left">
       <a-space>
         <SearchBar />
-        <a-menu
-          v-model:selectedKeys="current"
-          theme="dark"
-          mode="horizontal"
-          :style="{ lineHeight: '64px' }"
-          @select="selectMenu"
-        >
+        <a-menu v-model:selectedKeys="current" theme="dark" mode="horizontal" :style="{ lineHeight: '64px' }"
+          @select="selectMenu">
           <a-menu-item v-for="item in menus" :key="item.key">
-            <template #icon>
-              <icon-font :type="`icon-` + item.icon" />
-            </template>
             {{ item.name }}
           </a-menu-item>
         </a-menu>
       </a-space>
     </div>
-    <div>
-      <a-dropdown trigger="click">
+    <div class="top-right">
+      <a-dropdown trigger="click" placement="bottomRight">
         <a-space @click.prevent class="yy-avatar">
           <a-avatar size="32"> huaisun </a-avatar>
-          <icon-font class="icon" type="icon-arrow" />
+          <div class="yy-arrow">
+            <svg-icon icon-class="arrow" />
+          </div>
         </a-space>
         <template #overlay>
           <a-menu>
@@ -46,8 +40,8 @@ export default {
   setup() {
     const router = useRouter();
     const menus = [
-      { name: "首页", key: "overview", icon: "book" },
-      { name: "发现", key: "explore", icon: "rocket" },
+      { name: "首页", key: "overview", icon: "overview" },
+      { name: "发现", key: "explore", icon: "explore" },
     ];
     const current = ref(["overview"]);
     const selectMenu = (data) => {
@@ -67,39 +61,84 @@ export default {
 };
 </script>
 
-<style lang="less">
+<style lang="less" scoped>
 .header {
+  height: 64px;
   display: flex;
-  justify-content: space-between;
-  .ant-menu.ant-menu-dark {
-    background-color: #24292f;
-    .ant-menu-item {
-      font-weight: 900;
-      color: white;
-    }
-    .ant-menu-item-selected {
-      background-color: unset;
-      span {
-        color: #ff9800;
+
+  .top-left {
+    width: calc(100% - 60px);
+
+    :deep(.ant-space) {
+      width: 100%;
+
+      .ant-space-item:nth-child(2) {
+        width: 100%;
       }
     }
-  }
 
-  .ant-menu-horizontal > .ant-menu-item:hover {
-    background-color: unset;
-    color: #ffffffb3;
-  }
-  .yy-avatar {
-    cursor: pointer;
-    .icon {
-      color: #ffffff;
-      font-size: 12px;
+    :deep(.ant-menu.ant-menu-dark) {
+      background-color: #24292f;
+
+      .ant-menu-overflow {
+        overflow: hidden;
+      }
+
+      .ant-menu-item {
+        font-weight: 900;
+        color: white;
+      }
+
+      .ant-menu-item-selected {
+        background-color: unset;
+
+        span {
+          color: #ff9800;
+        }
+      }
     }
+
+    :deep(.ant-menu-horizontal>.ant-menu-item:hover) {
+      background-color: unset;
+      color: #ffffffb3;
+    }
+
   }
 
-  .yy-avatar:hover {
-    .icon {
-      color: #ffffffb3;
+  .top-right {
+    display: flex;
+
+    .url-add {
+      justify-items: center;
+      margin-right: 10px;
+      margin-top: 3px;
+
+      .svg-icon {
+        color: #ffffff;
+      }
+    }
+
+    .yy-avatar {
+      cursor: pointer;
+    }
+
+    .yy-avatar:hover {
+      .svg-icon {
+        color: #ffffffb3;
+      }
+    }
+
+    .yy-arrow {
+      display: flex;
+      justify-items: center;
+      cursor: pointer;
+
+      .svg-icon {
+        color: #ffffff;
+        font-size: 12px;
+        width: 16px;
+        height: 16px;
+      }
     }
   }
 }

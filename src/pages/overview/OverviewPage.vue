@@ -1,72 +1,129 @@
 <template>
   <div class="overview">
-    <a-row type="flex" justify="center">
-      <a-col :span="8">
-        <div class="view-left">
-          <!-- 头像 -->
-          <a-avatar :size="256">huaisun </a-avatar>
-          <div class="used-website">
-            <a-tag class="tag" color="#55acee">
-              <template #icon>
-                <img height="11" src="https://www.baidu.com/favicon.ico" />
-              </template>
-              百度
-            </a-tag>
-          </div>
+    <div class="yy-row view">
+      <OperationBar class="operation-top" />
+      <div class="view-left">
+        <!-- 头像 -->
+        <a-avatar class="yy-avatar" :size="256">huaisun </a-avatar>
+        <div class="used-website">
+          <a-tag v-for="(item, index) in likeUrlList" :key="index" class="tag" color="#55acee">
+            <template #icon>
+              <img height="11" :src="item.favicon" />
+            </template>
+            {{ item.name }}
+          </a-tag>
         </div>
-      </a-col>
-      <a-col :span="16">
-        <div class="view-right">
-          <UrlList />
-        </div>
-      </a-col>
-    </a-row>
+      </div>
+      <div class="view-right">
+        <OperationBar class="operation" />
+        <UrlList />
+      </div>
+    </div>
   </div>
 </template>
 <script>
+import OperationBar from "@/components/OperationBar.vue";
 import { ref } from "vue";
 import UrlList from "./UrlList.vue";
 
 export default {
-  components: { UrlList },
+  components: { UrlList, OperationBar },
   setup() {
-    const activeKey = ref("1");
-    const likes = ref(0);
-    const dislikes = ref(0);
-    const action = ref("");
+    const likeUrlList = ref([
+      { name: '百度', url: 'https://www.baidu.com', favicon: 'https://www.baidu.com/favicon.ico' },
+      { name: '百度', url: 'https://www.baidu.com', favicon: 'https://www.baidu.com/favicon.ico' },
+      { name: '百度', url: 'https://www.baidu.com', favicon: 'https://www.baidu.com/favicon.ico' },
+      { name: '百度', url: 'https://www.baidu.com', favicon: 'https://www.baidu.com/favicon.ico' },
+      { name: '百度', url: 'https://www.baidu.com', favicon: 'https://www.baidu.com/favicon.ico' },
+      { name: '百度', url: 'https://www.baidu.com', favicon: 'https://www.baidu.com/favicon.ico' },
+      { name: '百度', url: 'https://www.baidu.com', favicon: 'https://www.baidu.com/favicon.ico' },
+      { name: '百度', url: 'https://www.baidu.com', favicon: 'https://www.baidu.com/favicon.ico' },
+      { name: '百度', url: 'https://www.baidu.com', favicon: 'https://www.baidu.com/favicon.ico' },
+      { name: '百度', url: 'https://www.baidu.com', favicon: 'https://www.baidu.com/favicon.ico' },
+      { name: '百度', url: 'https://www.baidu.com', favicon: 'https://www.baidu.com/favicon.ico' },
+      { name: '百度', url: 'https://www.baidu.com', favicon: 'https://www.baidu.com/favicon.ico' },
+      { name: '百度', url: 'https://www.baidu.com', favicon: 'https://www.baidu.com/favicon.ico' },
+      { name: '百度', url: 'https://www.baidu.com', favicon: 'https://www.baidu.com/favicon.ico' },
+      { name: '百度', url: 'https://www.baidu.com', favicon: 'https://www.baidu.com/favicon.ico' },
+      { name: '百度', url: 'https://www.baidu.com', favicon: 'https://www.baidu.com/favicon.ico' },
+      { name: '百度', url: 'https://www.baidu.com', favicon: 'https://www.baidu.com/favicon.ico' },
+      { name: '百度', url: 'https://www.baidu.com', favicon: 'https://www.baidu.com/favicon.ico' },
+      { name: '百度', url: 'https://www.baidu.com', favicon: 'https://www.baidu.com/favicon.ico' },
+      { name: '百度', url: 'https://www.baidu.com', favicon: 'https://www.baidu.com/favicon.ico' },
+      { name: '百度', url: 'https://www.baidu.com', favicon: 'https://www.baidu.com/favicon.ico' },
+      { name: '百度', url: 'https://www.baidu.com', favicon: 'https://www.baidu.com/favicon.ico' },
+    ]);
 
-    const like = () => {
-      likes.value = 1;
-      dislikes.value = 0;
-      action.value = "liked";
+    const change = (affixed) => {
+      console.log(affixed);
     };
 
-    const dislike = () => {
-      likes.value = 0;
-      dislikes.value = 1;
-      action.value = "disliked";
-      console.log(action);
-    };
-    return { activeKey, likes, dislikes, like, dislike };
+    return { likeUrlList, change };
   },
 };
 </script>
 <style lang="less">
 .overview {
-  width: 1280px;
+  max-width: 1280px;
   margin: 0 auto;
+  .view {
+    .operation-top {
+      display: none;
+    }
+  }
+
+  @media screen and (max-width: 1024px) {
+    padding: 0 10px 0 20px;
+
+    .yy-row.view {
+      display: block;
+      .operation-top {
+        display: block;
+        margin-bottom: 10px;
+      }
+    }
+  }
+
   .view-left {
     padding-top: 24px;
+    width: 350px;
+
+    .yy-avatar {
+      margin-left: 20px;
+    }
+
+    @media screen and (max-width: 1024px) {
+      padding-top: 0;
+      width: 100%;
+
+      .yy-avatar {
+        display: none;
+      }
+    }
+
     .used-website {
       padding-top: 16px;
+
       .tag {
         margin-bottom: 8px;
         cursor: pointer;
       }
     }
   }
+
   .view-right {
+    width: calc(100% - 350px);
     padding-top: 16px;
+
+    .operation {
+      margin-bottom: 10px;
+    }
+    @media screen and (max-width: 1024px) {
+      width: 100%;
+      .operation {
+        display: none;
+      }
+    }
   }
 }
 </style>

@@ -17,11 +17,20 @@ export default {
   }
 };
 </script>
-<style>
+<style lang="less">
 .yeyang-top {
+  position: fixed;
+  z-index: 1;
+  width: 100%;
   background-color: #24292f;
+
+  @media screen and (max-width: 420px) {
+    padding: 0 16px !important;
+  }
 }
+
 .yeyang-content {
+  margin-top: 64px;
   background-color: #fff;
 }
 </style>

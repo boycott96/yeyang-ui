@@ -9,53 +9,43 @@ import SvgIcon from "@/components/SvgIcon.vue";
 
 import {
   Layout,
-  LayoutHeader,
-  LayoutContent,
-  LayoutFooter,
   Menu,
-  MenuItem,
   Result,
   Button,
   Space,
   Input,
-  InputSearch,
   Row,
   Col,
   Avatar,
   Dropdown,
-  MenuDivider,
   Tabs,
-  TabPane,
   Tag,
   Card,
-  CardGrid,
   Image,
+  Drawer,
+  Affix,
+  BackTop,
 } from "ant-design-vue";
 
 createApp(App)
   .use(router)
   .use(Layout)
-  .use(LayoutHeader)
-  .use(LayoutContent)
-  .use(LayoutFooter)
   .use(Menu)
-  .use(MenuItem)
   .use(Result)
   .use(Button)
   .use(Space)
   .use(Input)
-  .use(InputSearch)
   .use(Row)
   .use(Col)
   .use(Avatar)
   .use(Dropdown)
-  .use(MenuDivider)
   .use(Tabs)
-  .use(TabPane)
   .use(Tag)
   .use(Card)
-  .use(CardGrid)
   .use(Image)
+  .use(Drawer)
+  .use(Affix)
+  .use(BackTop)
   .component("svg-icon", SvgIcon)
   .mount("#app");
 

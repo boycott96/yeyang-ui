@@ -1,21 +1,19 @@
 <template>
-  <a-tabs v-model:activeKey="activeKey" type="editable-card" :tab-position="mode" @tabScroll="callback"
-    @edit="editFolder">
+  <a-tabs v-model:activeKey="activeKey" type="editable-card" @edit="editFolder">
     <a-tab-pane v-for="item in folders" :key="item.id" :tab="item.name">
       <div class="yy-row">
-        <template v-for="(item, index) in urlList" :key="index">
+        <template v-for="(urlItem, index) in urlList" :key="index">
           <div class="url-card">
             <div class="top">
               <div class="icon">
-                <img :src="item.url + `/favicon.ico`" />
+                <img :src="urlItem.url + `/favicon.ico`" />
               </div>
-              <a-divider />
               <div class="title">
-                <a :href="item.url" target="_blank">{{ item.name }}({{ item.url }})</a>
+                <a :href="urlItem.url" target="_blank">{{ urlItem.name }}({{ urlItem.url }})</a>
               </div>
             </div>
             <div class="bottom">
-              <ActionBar :data="item" @update:data="updateData($event, index)" />
+              <ActionBar :data="urlItem" @update:data="updateData($event, index)" />
             </div>
           </div>
         </template>
@@ -32,7 +30,13 @@ export default {
     ActionBar,
   },
   setup() {
-    const folders = ref([{ id: 1, name: '搜索引擎' }]);
+    const folders = ref([
+      { id: 1, name: '搜索引擎' },
+      { id: 2, name: '搜索引擎' },
+      { id: 3, name: '搜索引擎' },
+      { id: 4, name: '搜索引擎' },
+      { id: 5, name: '搜索引擎' },
+      { id: 6, name: '搜索引擎' }]);
     const urlList = [
       {
         name: "百度",
@@ -66,8 +70,329 @@ export default {
         star: { value: 10, active: 1 },
         comment: { value: 1, active: 1 },
       },
+      {
+        name: "必应",
+        url: "https://www.bing.com",
+        like: { value: 1000, active: 0 },
+        share: { value: 100, active: 0 },
+        star: { value: 10, active: 1 },
+        comment: { value: 1, active: 1 },
+      },
+      {
+        name: "必应",
+        url: "https://www.bing.com",
+        like: { value: 1000, active: 0 },
+        share: { value: 100, active: 0 },
+        star: { value: 10, active: 1 },
+        comment: { value: 1, active: 1 },
+      },
+      {
+        name: "必应",
+        url: "https://www.bing.com",
+        like: { value: 1000, active: 0 },
+        share: { value: 100, active: 0 },
+        star: { value: 10, active: 1 },
+        comment: { value: 1, active: 1 },
+      },
+      {
+        name: "必应",
+        url: "https://www.bing.com",
+        like: { value: 1000, active: 0 },
+        share: { value: 100, active: 0 },
+        star: { value: 10, active: 1 },
+        comment: { value: 1, active: 1 },
+      },
+      {
+        name: "必应",
+        url: "https://www.bing.com",
+        like: { value: 1000, active: 0 },
+        share: { value: 100, active: 0 },
+        star: { value: 10, active: 1 },
+        comment: { value: 1, active: 1 },
+      },
+      {
+        name: "必应",
+        url: "https://www.bing.com",
+        like: { value: 1000, active: 0 },
+        share: { value: 100, active: 0 },
+        star: { value: 10, active: 1 },
+        comment: { value: 1, active: 1 },
+      },
+      {
+        name: "必应",
+        url: "https://www.bing.com",
+        like: { value: 1000, active: 0 },
+        share: { value: 100, active: 0 },
+        star: { value: 10, active: 1 },
+        comment: { value: 1, active: 1 },
+      },
+      {
+        name: "必应",
+        url: "https://www.bing.com",
+        like: { value: 1000, active: 0 },
+        share: { value: 100, active: 0 },
+        star: { value: 10, active: 1 },
+        comment: { value: 1, active: 1 },
+      },
+      {
+        name: "必应",
+        url: "https://www.bing.com",
+        like: { value: 1000, active: 0 },
+        share: { value: 100, active: 0 },
+        star: { value: 10, active: 1 },
+        comment: { value: 1, active: 1 },
+      },
+      {
+        name: "必应",
+        url: "https://www.bing.com",
+        like: { value: 1000, active: 0 },
+        share: { value: 100, active: 0 },
+        star: { value: 10, active: 1 },
+        comment: { value: 1, active: 1 },
+      },
+      {
+        name: "必应",
+        url: "https://www.bing.com",
+        like: { value: 1000, active: 0 },
+        share: { value: 100, active: 0 },
+        star: { value: 10, active: 1 },
+        comment: { value: 1, active: 1 },
+      },
+      {
+        name: "必应",
+        url: "https://www.bing.com",
+        like: { value: 1000, active: 0 },
+        share: { value: 100, active: 0 },
+        star: { value: 10, active: 1 },
+        comment: { value: 1, active: 1 },
+      },
+      {
+        name: "必应",
+        url: "https://www.bing.com",
+        like: { value: 1000, active: 0 },
+        share: { value: 100, active: 0 },
+        star: { value: 10, active: 1 },
+        comment: { value: 1, active: 1 },
+      },
+      {
+        name: "必应",
+        url: "https://www.bing.com",
+        like: { value: 1000, active: 0 },
+        share: { value: 100, active: 0 },
+        star: { value: 10, active: 1 },
+        comment: { value: 1, active: 1 },
+      },
+      {
+        name: "必应",
+        url: "https://www.bing.com",
+        like: { value: 1000, active: 0 },
+        share: { value: 100, active: 0 },
+        star: { value: 10, active: 1 },
+        comment: { value: 1, active: 1 },
+      },
+      {
+        name: "必应",
+        url: "https://www.bing.com",
+        like: { value: 1000, active: 0 },
+        share: { value: 100, active: 0 },
+        star: { value: 10, active: 1 },
+        comment: { value: 1, active: 1 },
+      },
+      {
+        name: "必应",
+        url: "https://www.bing.com",
+        like: { value: 1000, active: 0 },
+        share: { value: 100, active: 0 },
+        star: { value: 10, active: 1 },
+        comment: { value: 1, active: 1 },
+      },
+      {
+        name: "必应",
+        url: "https://www.bing.com",
+        like: { value: 1000, active: 0 },
+        share: { value: 100, active: 0 },
+        star: { value: 10, active: 1 },
+        comment: { value: 1, active: 1 },
+      },
+      {
+        name: "必应",
+        url: "https://www.bing.com",
+        like: { value: 1000, active: 0 },
+        share: { value: 100, active: 0 },
+        star: { value: 10, active: 1 },
+        comment: { value: 1, active: 1 },
+      },
+      {
+        name: "必应",
+        url: "https://www.bing.com",
+        like: { value: 1000, active: 0 },
+        share: { value: 100, active: 0 },
+        star: { value: 10, active: 1 },
+        comment: { value: 1, active: 1 },
+      },
+      {
+        name: "必应",
+        url: "https://www.bing.com",
+        like: { value: 1000, active: 0 },
+        share: { value: 100, active: 0 },
+        star: { value: 10, active: 1 },
+        comment: { value: 1, active: 1 },
+      },
+      {
+        name: "必应",
+        url: "https://www.bing.com",
+        like: { value: 1000, active: 0 },
+        share: { value: 100, active: 0 },
+        star: { value: 10, active: 1 },
+        comment: { value: 1, active: 1 },
+      },
+      {
+        name: "必应",
+        url: "https://www.bing.com",
+        like: { value: 1000, active: 0 },
+        share: { value: 100, active: 0 },
+        star: { value: 10, active: 1 },
+        comment: { value: 1, active: 1 },
+      },
+      {
+        name: "必应",
+        url: "https://www.bing.com",
+        like: { value: 1000, active: 0 },
+        share: { value: 100, active: 0 },
+        star: { value: 10, active: 1 },
+        comment: { value: 1, active: 1 },
+      },
+      {
+        name: "必应",
+        url: "https://www.bing.com",
+        like: { value: 1000, active: 0 },
+        share: { value: 100, active: 0 },
+        star: { value: 10, active: 1 },
+        comment: { value: 1, active: 1 },
+      },
+      {
+        name: "必应",
+        url: "https://www.bing.com",
+        like: { value: 1000, active: 0 },
+        share: { value: 100, active: 0 },
+        star: { value: 10, active: 1 },
+        comment: { value: 1, active: 1 },
+      },
+      {
+        name: "必应",
+        url: "https://www.bing.com",
+        like: { value: 1000, active: 0 },
+        share: { value: 100, active: 0 },
+        star: { value: 10, active: 1 },
+        comment: { value: 1, active: 1 },
+      },
+      {
+        name: "必应",
+        url: "https://www.bing.com",
+        like: { value: 1000, active: 0 },
+        share: { value: 100, active: 0 },
+        star: { value: 10, active: 1 },
+        comment: { value: 1, active: 1 },
+      },
+      {
+        name: "必应",
+        url: "https://www.bing.com",
+        like: { value: 1000, active: 0 },
+        share: { value: 100, active: 0 },
+        star: { value: 10, active: 1 },
+        comment: { value: 1, active: 1 },
+      },
+      {
+        name: "必应",
+        url: "https://www.bing.com",
+        like: { value: 1000, active: 0 },
+        share: { value: 100, active: 0 },
+        star: { value: 10, active: 1 },
+        comment: { value: 1, active: 1 },
+      },
+      {
+        name: "必应",
+        url: "https://www.bing.com",
+        like: { value: 1000, active: 0 },
+        share: { value: 100, active: 0 },
+        star: { value: 10, active: 1 },
+        comment: { value: 1, active: 1 },
+      },
+      {
+        name: "必应",
+        url: "https://www.bing.com",
+        like: { value: 1000, active: 0 },
+        share: { value: 100, active: 0 },
+        star: { value: 10, active: 1 },
+        comment: { value: 1, active: 1 },
+      },
+      {
+        name: "必应",
+        url: "https://www.bing.com",
+        like: { value: 1000, active: 0 },
+        share: { value: 100, active: 0 },
+        star: { value: 10, active: 1 },
+        comment: { value: 1, active: 1 },
+      },
+      {
+        name: "必应",
+        url: "https://www.bing.com",
+        like: { value: 1000, active: 0 },
+        share: { value: 100, active: 0 },
+        star: { value: 10, active: 1 },
+        comment: { value: 1, active: 1 },
+      },
+      {
+        name: "必应",
+        url: "https://www.bing.com",
+        like: { value: 1000, active: 0 },
+        share: { value: 100, active: 0 },
+        star: { value: 10, active: 1 },
+        comment: { value: 1, active: 1 },
+      },
+      {
+        name: "必应",
+        url: "https://www.bing.com",
+        like: { value: 1000, active: 0 },
+        share: { value: 100, active: 0 },
+        star: { value: 10, active: 1 },
+        comment: { value: 1, active: 1 },
+      },
+      {
+        name: "必应",
+        url: "https://www.bing.com",
+        like: { value: 1000, active: 0 },
+        share: { value: 100, active: 0 },
+        star: { value: 10, active: 1 },
+        comment: { value: 1, active: 1 },
+      },
+      {
+        name: "必应",
+        url: "https://www.bing.com",
+        like: { value: 1000, active: 0 },
+        share: { value: 100, active: 0 },
+        star: { value: 10, active: 1 },
+        comment: { value: 1, active: 1 },
+      },
+      {
+        name: "必应",
+        url: "https://www.bing.com",
+        like: { value: 1000, active: 0 },
+        share: { value: 100, active: 0 },
+        star: { value: 10, active: 1 },
+        comment: { value: 1, active: 1 },
+      },
+      {
+        name: "必应",
+        url: "https://www.bing.com",
+        like: { value: 1000, active: 0 },
+        share: { value: 100, active: 0 },
+        star: { value: 10, active: 1 },
+        comment: { value: 1, active: 1 },
+      },
+       
     ];
-    const activeKey = ref(folders.value[0].id);
+    const activeKey = ref(folders.value[0].id || '');
     function updateData(params, index) {
       urlList[index] = params
     }
@@ -95,7 +420,7 @@ export default {
       }
     }
 
-    return { folders, urlList, updateData, editFolder, remove };
+    return { folders, urlList, activeKey, updateData, editFolder, remove };
   },
 };
 </script>
@@ -104,7 +429,7 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  width: 274px;
+  width: 300px;
   text-indent: 0;
   max-height: 148px;
   max-width: 100%;
@@ -117,6 +442,10 @@ export default {
   cursor: default;
   margin-right: 10px;
   margin-bottom: 10px;
+
+  @media screen and (max-width: 410px) {
+    width: 100%;
+  }
 
   .top {
     display: flex;

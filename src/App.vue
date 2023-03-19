@@ -1,5 +1,6 @@
 <template>
   <RouterView />
+  <a-back-top />
 </template>
 
 <script>

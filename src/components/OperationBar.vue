@@ -1,7 +1,7 @@
 <template>
   <div class="operation-bar">
     <a-affix :offset-top="80">
-      <a-dropdown-button @click="handleButtonClick">
+      <a-dropdown-button @click="addUrl">
         新建书签
         <template #overlay>
           <a-menu @click="handleMenuClick">
@@ -19,15 +19,18 @@
 </template>
 <script>
 export default {
-  setup() {
-    const handleButtonClick = () => {
-      console.log("click left button");
-    };
-    const handleMenuClick = () => {
-      console.log("click");
-    };
+  emits: ['add:url', 'add:folder'],
+  setup(props, context) {
+    function addUrl() {
+      context.emit('add:url');
+    }
+    function handleMenuClick(e) {
+      if (e.key === '1') {
+        context.emit('add:folder');
+      }
+    }
     return {
-      handleButtonClick,
+      addUrl,
       handleMenuClick,
     };
   },
@@ -36,6 +39,7 @@ export default {
 <style lang="less" scoped>
 .operation-bar {
   text-align: right;
+
   .svg-icon {
     width: 14px;
     height: 14px;

@@ -25,6 +25,9 @@ import {
   Drawer,
   Affix,
   BackTop,
+  Modal,
+  Form,
+  Upload,
 } from "ant-design-vue";
 
 createApp(App)
@@ -46,6 +49,9 @@ createApp(App)
   .use(Drawer)
   .use(Affix)
   .use(BackTop)
+  .use(Modal)
+  .use(Form)
+  .use(Upload)
   .component("svg-icon", SvgIcon)
   .mount("#app");
 

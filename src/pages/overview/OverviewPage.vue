@@ -1,7 +1,7 @@
 <template>
   <div class="overview">
     <div class="yy-row view">
-      <OperationBar class="operation-top" />
+      <OperationBar class="operation-top" @add:url="addUrlClick" @add:folder="addFolderClick" />
       <div class="view-left">
         <!-- 头像 -->
         <a-avatar class="yy-avatar" :size="256">huaisun </a-avatar>
@@ -15,19 +15,23 @@
         </div>
       </div>
       <div class="view-right">
-        <OperationBar class="operation" />
+        <OperationBar class="operation" @add:url="addUrlClick" @add:folder="addFolderClick" />
         <UrlList />
       </div>
     </div>
   </div>
+  <UrlModal :visible="urlVisible" :title="urlTitle" @update:visible="updateUrlVisible" />
+  <FolderModal :visible="folderVisible" :title="folderTitle" @update:visible="updateFolderVisible" />
 </template>
 <script>
+import FolderModal from "@/components/modal/FolderModal.vue";
+import UrlModal from "@/components/modal/UrlModal.vue";
 import OperationBar from "@/components/OperationBar.vue";
 import { ref } from "vue";
 import UrlList from "./UrlList.vue";
 
 export default {
-  components: { UrlList, OperationBar },
+  components: { UrlList, OperationBar, UrlModal, FolderModal },
   setup() {
     const likeUrlList = ref([
       { name: '百度', url: 'https://www.baidu.com', favicon: 'https://www.baidu.com/favicon.ico' },
@@ -53,12 +57,29 @@ export default {
       { name: '百度', url: 'https://www.baidu.com', favicon: 'https://www.baidu.com/favicon.ico' },
       { name: '百度', url: 'https://www.baidu.com', favicon: 'https://www.baidu.com/favicon.ico' },
     ]);
+    const urlVisible = ref(false);
+    const urlTitle = ref('新建书签');
+    const folderVisible = ref(false);
+    const folderTitle = ref('新建文件夹');
 
-    const change = (affixed) => {
-      console.log(affixed);
+    function updateUrlVisible(e) {
+      urlVisible.value = e;
+    }
+    function addUrlClick() {
+      urlVisible.value = true;
+    }
+    function updateFolderVisible(e) {
+      folderVisible.value = e;
+    }
+    function addFolderClick() {
+      folderVisible.value = true;
+      folderTitle.value = '新建文件夹';
+    }
+    return {
+      likeUrlList,
+      urlVisible, urlTitle, updateUrlVisible, addUrlClick,
+      folderVisible, updateFolderVisible, addFolderClick, folderTitle
     };
-
-    return { likeUrlList, change };
   },
 };
 </script>
@@ -66,6 +87,7 @@ export default {
 .overview {
   max-width: 1280px;
   margin: 0 auto;
+
   .view {
     .operation-top {
       display: none;
@@ -77,6 +99,7 @@ export default {
 
     .yy-row.view {
       display: block;
+
       .operation-top {
         display: block;
         margin-bottom: 10px;
@@ -118,8 +141,10 @@ export default {
     .operation {
       margin-bottom: 10px;
     }
+
     @media screen and (max-width: 1024px) {
       width: 100%;
+
       .operation {
         display: none;
       }

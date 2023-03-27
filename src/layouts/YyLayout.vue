@@ -31,6 +31,6 @@ export default {
 
 .yeyang-content {
   margin-top: 64px;
-  background-color: #fff;
+  background-color: #f5f6f7;
 }
 </style>

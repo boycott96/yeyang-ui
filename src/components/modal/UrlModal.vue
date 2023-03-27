@@ -6,6 +6,10 @@
             <a-form-item label="书签" name="url" :rules="[{ required: true, message: '请输入书签!' }]">
                 <a-input v-model:value="formState.url" />
             </a-form-item>
+            <a-form-item label="文件夹" name="folder" :rules="[{ required: true, message: '请选择文件夹!' }]">
+                <a-select v-model:value="value" style="width: 100%" placeholder="Tags Mode" :options="options"
+                    @change="handleChange"></a-select>
+            </a-form-item>
             <a-form-item label="名称" name="urlName" :rules="[{ required: true, message: '请输入书签名称!' }]">
                 <a-input v-model:value="formState.urlName" />
             </a-form-item>
@@ -104,6 +108,9 @@ export default {
             }
             return isJpgOrPng && isLt2M;
         }
+        function handleSelectChange(value) {
+            console.log(`selected ${value}`);
+        }
         return {
             confirmLoading,
             handleOk,
@@ -117,7 +124,9 @@ export default {
             loading,
             imageUrl,
             handleChange,
-            beforeUpload
+            beforeUpload, value: ref([]),
+            handleSelectChange,
+            options: [...Array(25)].map((_, i) => ({ value: (i + 10).toString(36) + (i + 1) })),
         };
     }
 }

@@ -28,6 +28,8 @@ import {
   Modal,
   Form,
   Upload,
+  Select,
+  Popover,
 } from "ant-design-vue";
 
 createApp(App)
@@ -52,6 +54,8 @@ createApp(App)
   .use(Modal)
   .use(Form)
   .use(Upload)
+  .use(Select)
+  .use(Popover)
   .component("svg-icon", SvgIcon)
   .mount("#app");
 

@@ -16,7 +16,7 @@
       </div>
       <div class="view-right">
         <OperationBar class="operation" @add:url="addUrlClick" @add:folder="addFolderClick" />
-        <UrlList />
+        <UrlList @add:folder="addFolderClick" />
       </div>
     </div>
   </div>
@@ -85,8 +85,8 @@ export default {
 </script>
 <style lang="less">
 .overview {
-  max-width: 1280px;
   margin: 0 auto;
+  padding: 0 20px;
 
   .view {
     .operation-top {
@@ -95,7 +95,7 @@ export default {
   }
 
   @media screen and (max-width: 1024px) {
-    padding: 0 10px 0 20px;
+    padding: 0 20px;
 
     .yy-row.view {
       display: block;
@@ -125,7 +125,11 @@ export default {
     }
 
     .used-website {
-      padding-top: 16px;
+      padding: 12px 4px 4px 12px;
+      background: #fff;
+      margin-right: 16px;
+      margin-top: 16px;
+      border-radius: 8px;
 
       .tag {
         margin-bottom: 8px;

@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
 import SignIn from "../pages/auth/SignIn";
+import SignUp from "../pages/auth/SignUp";
 import YyLayout from "../layouts/YyLayout";
 
 // Page
@@ -13,6 +14,10 @@ const routes = [
   {
     path: "/login",
     component: SignIn,
+  },
+  {
+    path: "/register",
+    component: SignUp,
   },
   {
     path: "/",

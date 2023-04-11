@@ -29,6 +29,7 @@ import {
   Form,
   Upload,
   Select,
+  Checkbox,
   Popover,
 } from "ant-design-vue";
 
@@ -55,6 +56,7 @@ createApp(App)
   .use(Form)
   .use(Upload)
   .use(Select)
+  .use(Checkbox)
   .use(Popover)
   .component("svg-icon", SvgIcon)
   .mount("#app");

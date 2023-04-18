@@ -1,10 +1,7 @@
 <template>
   <div class="overview">
     <div class="yy-row view">
-      <OperationBar class="operation-top" @add:url="addUrlClick" @add:folder="addFolderClick" />
-      <div class="view-left">
-        <!-- 头像 -->
-        <a-avatar class="yy-avatar" :size="256">huaisun </a-avatar>
+      <div v-if="likeUrlList.length > 0" class="view-left">
         <div class="used-website">
           <a-tag v-for="(item, index) in likeUrlList" :key="index" class="tag" color="#55acee">
             <template #icon>
@@ -14,9 +11,8 @@
           </a-tag>
         </div>
       </div>
-      <div class="view-right">
-        <OperationBar class="operation" @add:url="addUrlClick" @add:folder="addFolderClick" />
-        <UrlList @add:folder="addFolderClick" />
+      <div class="view-right" :style="{ width: likeUrlList.length > 0 ? 'calc(100% - 350px)' : '100%' }">
+        <UrlList />
       </div>
     </div>
   </div>
@@ -26,34 +22,13 @@
 <script>
 import FolderModal from "@/components/modal/FolderModal.vue";
 import UrlModal from "@/components/modal/UrlModal.vue";
-import OperationBar from "@/components/OperationBar.vue";
 import { ref } from "vue";
 import UrlList from "./UrlList.vue";
 
 export default {
-  components: { UrlList, OperationBar, UrlModal, FolderModal },
+  components: { UrlList, UrlModal, FolderModal },
   setup() {
     const likeUrlList = ref([
-      { name: '百度', url: 'https://www.baidu.com', favicon: 'https://www.baidu.com/favicon.ico' },
-      { name: '百度', url: 'https://www.baidu.com', favicon: 'https://www.baidu.com/favicon.ico' },
-      { name: '百度', url: 'https://www.baidu.com', favicon: 'https://www.baidu.com/favicon.ico' },
-      { name: '百度', url: 'https://www.baidu.com', favicon: 'https://www.baidu.com/favicon.ico' },
-      { name: '百度', url: 'https://www.baidu.com', favicon: 'https://www.baidu.com/favicon.ico' },
-      { name: '百度', url: 'https://www.baidu.com', favicon: 'https://www.baidu.com/favicon.ico' },
-      { name: '百度', url: 'https://www.baidu.com', favicon: 'https://www.baidu.com/favicon.ico' },
-      { name: '百度', url: 'https://www.baidu.com', favicon: 'https://www.baidu.com/favicon.ico' },
-      { name: '百度', url: 'https://www.baidu.com', favicon: 'https://www.baidu.com/favicon.ico' },
-      { name: '百度', url: 'https://www.baidu.com', favicon: 'https://www.baidu.com/favicon.ico' },
-      { name: '百度', url: 'https://www.baidu.com', favicon: 'https://www.baidu.com/favicon.ico' },
-      { name: '百度', url: 'https://www.baidu.com', favicon: 'https://www.baidu.com/favicon.ico' },
-      { name: '百度', url: 'https://www.baidu.com', favicon: 'https://www.baidu.com/favicon.ico' },
-      { name: '百度', url: 'https://www.baidu.com', favicon: 'https://www.baidu.com/favicon.ico' },
-      { name: '百度', url: 'https://www.baidu.com', favicon: 'https://www.baidu.com/favicon.ico' },
-      { name: '百度', url: 'https://www.baidu.com', favicon: 'https://www.baidu.com/favicon.ico' },
-      { name: '百度', url: 'https://www.baidu.com', favicon: 'https://www.baidu.com/favicon.ico' },
-      { name: '百度', url: 'https://www.baidu.com', favicon: 'https://www.baidu.com/favicon.ico' },
-      { name: '百度', url: 'https://www.baidu.com', favicon: 'https://www.baidu.com/favicon.ico' },
-      { name: '百度', url: 'https://www.baidu.com', favicon: 'https://www.baidu.com/favicon.ico' },
       { name: '百度', url: 'https://www.baidu.com', favicon: 'https://www.baidu.com/favicon.ico' },
       { name: '百度', url: 'https://www.baidu.com', favicon: 'https://www.baidu.com/favicon.ico' },
     ]);
@@ -86,29 +61,16 @@ export default {
 <style lang="less">
 .overview {
   margin: 0 auto;
-  padding: 0 20px;
-
-  .view {
-    .operation-top {
-      display: none;
-    }
-  }
 
   @media screen and (max-width: 1024px) {
     padding: 0 20px;
 
     .yy-row.view {
       display: block;
-
-      .operation-top {
-        display: block;
-        margin-bottom: 10px;
-      }
     }
   }
 
   .view-left {
-    padding-top: 24px;
     width: 350px;
 
     .yy-avatar {
@@ -125,11 +87,9 @@ export default {
     }
 
     .used-website {
-      padding: 12px 4px 4px 12px;
       background: #fff;
-      margin-right: 16px;
-      margin-top: 16px;
-      border-radius: 8px;
+      padding: 12px;
+      height: 100%;
 
       .tag {
         margin-bottom: 8px;
@@ -139,19 +99,11 @@ export default {
   }
 
   .view-right {
-    width: calc(100% - 350px);
-    padding-top: 16px;
-
-    .operation {
-      margin-bottom: 10px;
-    }
+    padding: 0 16px;
+    padding-top: 12px;
 
     @media screen and (max-width: 1024px) {
       width: 100%;
-
-      .operation {
-        display: none;
-      }
     }
   }
 }

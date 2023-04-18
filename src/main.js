@@ -31,6 +31,8 @@ import {
   Select,
   Checkbox,
   Popover,
+  Anchor,
+  List,
 } from "ant-design-vue";
 
 createApp(App)
@@ -58,6 +60,8 @@ createApp(App)
   .use(Select)
   .use(Checkbox)
   .use(Popover)
+  .use(Anchor)
+  .use(List)
   .component("svg-icon", SvgIcon)
   .mount("#app");
 

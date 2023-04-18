@@ -24,3 +24,35 @@ export function focusAndOpenKeyboard(el, timeout) {
     }, timeout);
   }
 }
+/**
+ * 获取浏览器的类型
+ * 0: chrome
+ * 1: firefox
+ * 2: safari
+ * 3: IE
+ * 4: edge
+ * 5: opera
+ */
+export function getBrowser() {
+  const userAgent = navigator.userAgent;
+  if (userAgent.indexOf("Chrome") > -1 && userAgent.indexOf("Edg") == -1) {
+    return 0;
+  } else if (userAgent.indexOf("Firefox") > -1) {
+    return 1;
+  } else if (
+    userAgent.indexOf("Safari") > -1 &&
+    userAgent.indexOf("Chrome") == -1
+  ) {
+    return 2;
+  } else if (userAgent.indexOf("MSIE") > -1 || !!document.documentMode == true) {
+    return 3;
+  } else if (userAgent.indexOf("Edg") > -1) {
+    return 4;
+  } else if (userAgent.indexOf("Opera") > -1 || userAgent.indexOf("OPR") > -1) {
+    return 5;
+  }
+}
+export function getSystemOs() {
+  const userAgent = navigator.userAgent;
+  console.log(userAgent);
+}

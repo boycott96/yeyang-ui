@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from "vue-router";
 import SignIn from "../pages/auth/SignIn";
 import SignUp from "../pages/auth/SignUp";
 import YyLayout from "../layouts/YyLayout";
+import VerifyCode from "../pages/auth/VerifyCode";
 
 // Page
 import OverViewPage from "../pages/overview/OverviewPage.vue";
@@ -20,9 +21,13 @@ const routes = [
     component: SignUp,
   },
   {
+    path: "/verify/code",
+    component: VerifyCode,
+  },
+  {
     path: "/",
     component: YyLayout,
-    redirect: '/huaisun',
+    redirect: '/login',
     children: [
       { path: "/:username", component: OverViewPage },
       { path: "explore", component: ExplorePage },

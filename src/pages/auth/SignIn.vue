@@ -1,9 +1,13 @@
 <template>
   <div class="sign">
-    <SignLeft title="主人，欢迎回家！"/>
+    <SignLeft title="主人，欢迎回家！" />
     <div class="sign-right">
       <div class="form">
         <div class="title">登录</div>
+        <div class="subtitle">
+          <span class="desc">新用户？</span>
+          <router-link class="add" to="/register">创建一个账号</router-link>
+        </div>
         <a-form :model="formState" name="basic" autocomplete="off" @finish="onFinish" @finishFailed="onFinishFailed">
           <a-form-item name="username" :rules="[{ required: true, message: '请输入您的账号!' }]">
             <a-input placeholder="账号" v-model:value="formState.username" />
@@ -25,29 +29,49 @@
 <script>
 import { reactive } from 'vue';
 import SignLeft from './SignLeft.vue';
-
+import { login } from '@/api/auth'
+import md5 from 'md5';
+import { message } from 'ant-design-vue';
+import { useRouter } from 'vue-router';
 
 export default {
-    setup() {
-        const formState = reactive({
-            username: "",
-            password: "",
-            remember: true,
-        });
-        const onFinish = (values) => {
-            console.log("Success:", values);
-        };
-        const onFinishFailed = (errorInfo) => {
-            console.log("Failed:", errorInfo);
-        };
-        return {
-            formState,
-            onFinish,
-            onFinishFailed,
-            labelCol: { style: { width: "1px" } },
-        };
-    },
-    components: { SignLeft }
+  setup() {
+    const formState = reactive({
+      username: "",
+      password: "",
+      remember: true,
+    });
+    const router = useRouter();
+    const onFinish = (values) => {
+      const data = {
+        username: values.username,
+        password: md5(values.password)
+      }
+      login(data).then(res => {
+        if (res.code === 200) {
+          const user = res.data.user;
+          if (user) {
+            router.push('/' + user.username);
+          }
+        }
+      }).catch(error => {
+        console.log(error);
+        if (error.response.status === 412) {
+          message.error(error.response.data.message);
+        }
+      })
+    };
+    const onFinishFailed = (errorInfo) => {
+      console.log("Failed:", errorInfo);
+    };
+    return {
+      formState,
+      onFinish,
+      onFinishFailed,
+      labelCol: { style: { width: "1px" } },
+    };
+  },
+  components: { SignLeft }
 };
 </script>
 <style lang="less" scoped>
@@ -72,7 +96,34 @@ export default {
         line-height: 1.5;
         font-size: 1.25rem;
         font-family: "Public Sans", sans-serif;
+      }
+
+      .subtitle {
+        margin-top: 16px;
         margin-bottom: 40px;
+
+        .desc {
+          margin: 0px;
+          line-height: 1.57143;
+          font-size: 0.875rem;
+          font-family: "Public Sans", sans-serif;
+          font-weight: 400;
+        }
+
+        .add {
+          margin-left: 4px;
+          font-weight: 600;
+          line-height: 1.57143;
+          font-size: 0.875rem;
+          font-family: "Public Sans", sans-serif;
+          color: rgb(0, 171, 85);
+          text-decoration: none;
+          cursor: pointer;
+        }
+
+        .add:hover {
+          text-decoration: underline;
+        }
       }
     }
   }

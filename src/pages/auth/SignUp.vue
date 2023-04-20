@@ -1,32 +1,32 @@
 <template>
   <div class="sign">
-    <SignLeft title="使用Yy更有效的处理您的网址" />
+    <SignLeft title="使用Yy更有效的处理您的书签" />
     <div class="sign-right">
       <div class="form">
         <div class="title">注册</div>
+        <div class="subtitle">
+          <span class="desc">已有账号?</span>
+          <router-link class="add" to="/login">进行登录</router-link>
+        </div>
         <a-form ref="registerForm" :model="formState" name="basic" autocomplete="off" @finish="onFinish"
-          @finishFailed="onFinishFailed" :rules="rulesRef" @validate="validateForm">
+          :rules="rulesRef">
           <a-form-item name="email">
             <a-input placeholder="请输入邮箱!" v-model:value="formState.email" />
           </a-form-item>
           <a-form-item name="username">
             <a-input placeholder="请输入账号!" v-model:value="formState.username" />
           </a-form-item>
+          <a-form-item name="stageName">
+            <a-input placeholder="请输入用户名!" v-model:value="formState.stageName" />
+          </a-form-item>
           <a-form-item name="password">
             <a-input-password placeholder="请输入密码!" v-model:value="formState.password" />
           </a-form-item>
           <a-form-item name="repassword">
-            <a-input-password placeholder="请重复输入密码!" v-model:value="formState.repassword" />
-          </a-form-item>
-          <a-form-item name="verificationCode">
-            <a-input style="width: 120px" placeholder="请输入验证码!" v-model:value="formState.verificationCode" />
-            <a-button style="margin-left: 20px" :disabled="timeNum != 0" type="primary" @click="sendCode()">
-              <span v-if="timeNum != 0">{{ timeNum }}已发送</span>
-              <span v-else>发送验证码</span>
-            </a-button>
+            <a-input-password placeholder="请再次输入密码!" v-model:value="formState.repassword" />
           </a-form-item>
           <a-form-item>
-            <a-button :disabled="isSubmit" style="width: 100%" type="primary" html-type="submit">注 册</a-button>
+            <a-button style="width: 100%" type="primary" html-type="submit" :loading="registerLoading">注 册</a-button>
           </a-form-item>
         </a-form>
       </div>
@@ -36,7 +36,10 @@
 <script>
 import { reactive, ref } from "vue";
 import SignLeft from "./SignLeft.vue";
-import { Form } from 'ant-design-vue';
+import { Form, message } from 'ant-design-vue';
+import md5 from 'md5'
+import { register, checkUnique } from '@/api/auth';
+import { useRouter } from "vue-router";
 
 const useForm = Form.useForm;
 export default {
@@ -45,83 +48,134 @@ export default {
     const formState = reactive({
       email: "",
       username: "",
+      stageName: "",
       password: "",
       repassword: "",
-      verificationCode: ""
     });
+    const emailReg = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    let timer = null;
+    const validateEmail = async (rule, value) => {
+      if (value === '') {
+        return Promise.reject('请输入邮箱');
+      } else if (!String(value).toLowerCase().match(emailReg)) {
+        return Promise.reject('邮箱格式错误');
+      } else {
+        clearTimeout(timer);
+        timer = setTimeout(function () {
+          checkUnique({ value, type: 1 }).then(res => {
+            if (res.data.code === 200) {
+              return Promise.resolve();
+            } else {
+              return Promise.reject(res.data.message);
+            }
+          })
+        }, 500);
+      }
+    }
+    const validateUsername = async (rule, value) => {
+      if (value !== '') {
+        clearTimeout(timer);
+        timer = setTimeout(function () {
+          checkUnique({ value, type: 2 }).then(res => {
+            if (res.data.code === 200) {
+              return Promise.resolve();
+            } else {
+              return Promise.reject(res.data.message);
+            }
+          })
+        }, 500);
+      }
+    }
+    const validatePass = async (rule, value) => {
+      if (value === '') {
+        return Promise.reject('请输入密码');
+      } else {
+        if (formState.repassword !== '') {
+          registerForm.value.validateFields('repassword');
+        }
+        return Promise.resolve();
+      }
+    }
+    const validateRePass = async (rule, value) => {
+      if (value === '') {
+        return Promise.reject('请再次输入密码');
+      } else if (value != formState.password) {
+        return Promise.reject('两次密码输入不匹配');
+      } else {
+        return Promise.resolve();
+      }
+    }
     const rulesRef = reactive({
       email: [
         {
           required: true,
-          message: '请输入邮箱',
-          type: 'email'
+          validator: validateEmail,
+          trigger: 'change'
         }
       ],
       username: [
         {
           required: true,
           message: '请输入账号',
+        },
+        {
+          min: 3,
+          max: 12,
+          message: '账号长度限制3-12位'
+        },
+        {
+          validator: validateUsername,
+          trigger: 'change'
         }
       ],
       password: [
         {
           required: true,
-          message: '请输入密码',
-        }
+          validator: validatePass,
+          trigger: 'change'
+        },
       ],
       repassword: [
         {
-          required: true,
-          message: '请重复输入密码',
-        }
-      ],
-      verificationCode: [
-        {
-          required: true,
-          message: '请输入验证码',
+          validator: validateRePass,
+          trigger: 'channge'
         }
       ],
     });
+    const router = useRouter();
+    const registerLoading = ref(false);
     const onFinish = (values) => {
-      console.log("Success:", values);
-    };
-    const onFinishFailed = (errorInfo) => {
-      console.log("Failed:", errorInfo);
+      const data = {
+        email: values.email,
+        username: values.username,
+        stageName: values.stageName,
+        password: md5(values.password)
+      }
+      registerLoading.value = true;
+      register(data).then(res => {
+        if (res.data.code === 200) {
+          registerLoading.value = false;
+          router.push({
+            path: "/verify/code", query: { email: data.email }
+          });
+        }
+      }).catch(res => {
+        message.error(res.response.message);
+        registerLoading.value = false;
+      })
     };
     const timeNum = ref(0);
-    let timer = null;
-    const isSubmit = ref(true);
-    const { validate, validateInfos } = useForm(formState, rulesRef);
-    const sendCode = async () => {
-      await registerForm.value.validateFields(['email']).then(() => {
-        timeNum.value = 60;
-        timer = setInterval(() => {
-          if (timeNum.value > 0) {
-            timeNum.value = timeNum.value - 1;
-          } else {
-            clearInterval(timer);
-          }
-        }, 1000);
-      }).catch(() => { })
-    }
-    const validateForm = () => {
-      validate().then(() => {
-        isSubmit.value = false;
-      }).catch(() => { })
-    }
+    const { validateInfos } = useForm(formState, rulesRef);
 
     return {
       formState,
       onFinish,
-      onFinishFailed,
       labelCol: { style: { width: "1px" } },
-      sendCode,
       timeNum,
-      isSubmit,
-      validateForm,
       validateInfos,
       rulesRef,
-      registerForm
+      registerForm,
+      registerLoading
     };
   },
   components: { SignLeft },
@@ -149,7 +203,34 @@ export default {
         line-height: 1.5;
         font-size: 1.25rem;
         font-family: "Public Sans", sans-serif;
+      }
+
+      .subtitle {
+        margin-top: 16px;
         margin-bottom: 40px;
+
+        .desc {
+          margin: 0px;
+          line-height: 1.57143;
+          font-size: 0.875rem;
+          font-family: "Public Sans", sans-serif;
+          font-weight: 400;
+        }
+
+        .add {
+          margin-left: 4px;
+          font-weight: 600;
+          line-height: 1.57143;
+          font-size: 0.875rem;
+          font-family: "Public Sans", sans-serif;
+          color: rgb(0, 171, 85);
+          text-decoration: none;
+          cursor: pointer;
+        }
+
+        .add:hover {
+          text-decoration: underline;
+        }
       }
     }
   }

@@ -3,6 +3,7 @@ import App from "./App.vue";
 import "ant-design-vue/dist/antd.css";
 import "./styles/global.css";
 import router from "./router";
+import axios from 'axios';
 
 // svgIcon
 import SvgIcon from "@/components/SvgIcon.vue";
@@ -35,8 +36,27 @@ import {
   List,
 } from "ant-design-vue";
 
-createApp(App)
-  .use(router)
+// 请求拦截器
+axios.interceptors.request.use(
+  config => {
+    return config;
+  },
+  error => {
+    return Promise.reject(error);
+  }
+)
+// 响应拦截器
+axios.interceptors.response.use(
+  response => {
+    return response.data;
+  },
+  error => {
+    return Promise.reject(error);
+  }
+)
+
+const app = createApp(App);
+app.use(router)
   .use(Layout)
   .use(Menu)
   .use(Result)
@@ -62,8 +82,9 @@ createApp(App)
   .use(Popover)
   .use(Anchor)
   .use(List)
-  .component("svg-icon", SvgIcon)
-  .mount("#app");
+  .component("svg-icon", SvgIcon);
+
+app.mount('#app');
 
 const requireAll = (requireContext) =>
   requireContext.keys().map(requireContext);

@@ -4,6 +4,7 @@ import "ant-design-vue/dist/antd.css";
 import "./styles/global.css";
 import router from "./router";
 import axios from 'axios';
+import Cookies from 'js-cookie';
 
 // svgIcon
 import SvgIcon from "@/components/SvgIcon.vue";
@@ -39,6 +40,11 @@ import {
 // 请求拦截器
 axios.interceptors.request.use(
   config => {
+    // token绑定
+    const token = Cookies.get('Authorization');
+    if (token) {
+      config.headers['Authorization'] = 'Bearer ' + token;
+    }
     return config;
   },
   error => {
@@ -51,6 +57,10 @@ axios.interceptors.response.use(
     return response.data;
   },
   error => {
+    // token异常处理
+    if (error.response.status === 401) {
+      router.push('/login');
+    } 
     return Promise.reject(error);
   }
 )

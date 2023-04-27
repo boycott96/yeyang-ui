@@ -20,7 +20,7 @@
           </div>
         </a-space>
         <template #overlay>
-          <a-menu>
+          <a-menu @click="dropClick">
             <a-menu-item key="0"> 个人主页 </a-menu-item>
             <a-menu-item key="1"> 修改资料 </a-menu-item>
             <a-menu-divider />
@@ -32,7 +32,9 @@
   </div>
 </template>
 <script>
+import { logout } from "@/api/auth";
 import SearchBar from "@/components/SearchBar.vue";
+import Cookies from "js-cookie";
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 
@@ -51,10 +53,21 @@ export default {
         router.push("/" + data.key);
       }
     };
+    const dropClick = (e) => {
+      if (e.key === '2') {
+        logout().then(res => {
+          if (res.code === 200) {
+            Cookies.remove('Authorization');
+            router.push("/login");
+          }
+        })
+      }
+    }
     return {
       menus,
       current,
       selectMenu,
+      dropClick
     };
   },
   components: { SearchBar },

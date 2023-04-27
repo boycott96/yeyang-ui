@@ -11,19 +11,16 @@
         <a-form ref="registerForm" :model="formState" name="basic" autocomplete="off" @finish="onFinish"
           :rules="rulesRef">
           <a-form-item name="email">
-            <a-input placeholder="请输入邮箱!" v-model:value="formState.email" />
+            <a-input placeholder="邮箱" v-model:value="formState.email" />
           </a-form-item>
           <a-form-item name="username">
-            <a-input placeholder="请输入账号!" v-model:value="formState.username" />
-          </a-form-item>
-          <a-form-item name="stageName">
-            <a-input placeholder="请输入用户名!" v-model:value="formState.stageName" />
+            <a-input placeholder="用户名" v-model:value="formState.username" />
           </a-form-item>
           <a-form-item name="password">
-            <a-input-password placeholder="请输入密码!" v-model:value="formState.password" />
+            <a-input-password placeholder="请输入密码" v-model:value="formState.password" />
           </a-form-item>
           <a-form-item name="repassword">
-            <a-input-password placeholder="请再次输入密码!" v-model:value="formState.repassword" />
+            <a-input-password placeholder="请再次输入密码" v-model:value="formState.repassword" />
           </a-form-item>
           <a-form-item>
             <a-button style="width: 100%" type="primary" html-type="submit" :loading="registerLoading">注 册</a-button>
@@ -48,45 +45,43 @@ export default {
     const formState = reactive({
       email: "",
       username: "",
-      stageName: "",
       password: "",
       repassword: "",
     });
+    const notUsername = ['register', 'login'];
     const emailReg = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    let timer = null;
-    const validateEmail = async (rule, value) => {
-      if (value === '') {
-        return Promise.reject('请输入邮箱');
-      } else if (!String(value).toLowerCase().match(emailReg)) {
-        return Promise.reject('邮箱格式错误');
-      } else {
-        clearTimeout(timer);
-        timer = setTimeout(function () {
-          checkUnique({ value, type: 1 }).then(res => {
-            if (res.data.code === 200) {
-              return Promise.resolve();
-            } else {
-              return Promise.reject(res.data.message);
-            }
-          })
-        }, 500);
+    const validateEmail = async (_rule, value) => {
+      if (value != '') {
+        if (!String(value).toLowerCase().match(emailReg)) {
+          return Promise.reject('邮箱格式错误');
+        } else {
+          try {
+            await checkUnique({ value, type: 1 });
+            return Promise.resolve();
+          } catch (error) {
+            return Promise.reject(error.response.data.message);
+          }
+        }
       }
     }
-    const validateUsername = async (rule, value) => {
+    const validateUsername = async (_rule, value) => {
       if (value !== '') {
-        clearTimeout(timer);
-        timer = setTimeout(function () {
-          checkUnique({ value, type: 2 }).then(res => {
-            if (res.data.code === 200) {
-              return Promise.resolve();
-            } else {
-              return Promise.reject(res.data.message);
-            }
-          })
-        }, 500);
+        if (value.length < 3 || value.length > 12) {
+          return Promise.reject('用户名长度限制3-12位');
+        }
+        if (notUsername.indexOf(value) >= 0) {
+          return Promise.reject('用户名不合法');
+        } else {
+          try {
+            await checkUnique({ value, type: 2 });
+            return Promise.resolve();
+          } catch (error) {
+            return Promise.reject(error.response.data.message);
+          }
+        }
       }
     }
-    const validatePass = async (rule, value) => {
+    const validatePass = async (_rule, value) => {
       if (value === '') {
         return Promise.reject('请输入密码');
       } else {
@@ -96,7 +91,7 @@ export default {
         return Promise.resolve();
       }
     }
-    const validateRePass = async (rule, value) => {
+    const validateRePass = async (_rule, value) => {
       if (value === '') {
         return Promise.reject('请再次输入密码');
       } else if (value != formState.password) {
@@ -116,16 +111,17 @@ export default {
       username: [
         {
           required: true,
-          message: '请输入账号',
+          message: '请输入用户名',
         },
         {
           min: 3,
           max: 12,
-          message: '账号长度限制3-12位'
+          message: '用户名长度限制3-12位',
+          trigger: 'change'
         },
         {
           validator: validateUsername,
-          trigger: 'change'
+          trigger: 'blur'
         }
       ],
       password: [
@@ -148,19 +144,19 @@ export default {
       const data = {
         email: values.email,
         username: values.username,
-        stageName: values.stageName,
+        stageName: values.username,
         password: md5(values.password)
       }
       registerLoading.value = true;
       register(data).then(res => {
-        if (res.data.code === 200) {
+        if (res.code === 200) {
           registerLoading.value = false;
           router.push({
             path: "/verify/code", query: { email: data.email }
           });
         }
-      }).catch(res => {
-        message.error(res.response.message);
+      }).catch(error => {
+        message.error(error.response.data.message);
         registerLoading.value = false;
       })
     };

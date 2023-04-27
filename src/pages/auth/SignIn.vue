@@ -29,10 +29,11 @@
 <script>
 import { reactive } from 'vue';
 import SignLeft from './SignLeft.vue';
-import { login } from '@/api/auth'
+import { login, getUserInfo } from '@/api/auth'
 import md5 from 'md5';
 import { message } from 'ant-design-vue';
 import { useRouter } from 'vue-router';
+import Cookies from 'js-cookie';
 
 export default {
   setup() {
@@ -42,6 +43,16 @@ export default {
       remember: true,
     });
     const router = useRouter();
+
+    initAccount();
+    function initAccount() {
+      if (Cookies.get('Authorization')) {
+        getUserInfo().then(res => {
+          router.push('/' + res.data.username);
+        })
+      }
+    }
+
     const onFinish = (values) => {
       const data = {
         username: values.username,
@@ -49,13 +60,17 @@ export default {
       }
       login(data).then(res => {
         if (res.code === 200) {
+          if (values.remember) {
+            Cookies.set('Authorization', res.data.accessToken, { expires: 7 });
+          } else {
+            Cookies.remove('Authorization');
+          }
           const user = res.data.user;
           if (user) {
             router.push('/' + user.username);
           }
         }
       }).catch(error => {
-        console.log(error);
         if (error.response.status === 412) {
           message.error(error.response.data.message);
         }

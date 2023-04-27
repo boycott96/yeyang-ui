@@ -41,7 +41,7 @@ export default {
         return Promise.reject('请输入邮件中的验证码!')
       } else if (value.length === 6) {
         await verify({ email: route.query.email, verifyCode: value }).then(res => {
-          if (res.data.code === 200) {
+          if (res.code === 200) {
             message.success('注册成功');
             router.push('/login');
             return Promise.resolve();

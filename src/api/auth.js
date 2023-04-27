@@ -23,3 +23,13 @@ export function resend(params) {
 export function login(data) {
     return axios.post('/api/auth/login', data);
 }
+
+// 获取登录用户信息
+export function getUserInfo() {
+    return axios.get('/api/auth/user/info');
+}
+
+// 退出登录
+export function logout() {
+    return axios.delete('/api/auth/logout');
+} 

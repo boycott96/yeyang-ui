@@ -16,7 +16,7 @@
             <a-input-password placeholder="密码" v-model:value="formState.password" />
           </a-form-item>
           <a-form-item name="remember">
-            <a-checkbox v-model:checked="formState.remember">保持登录</a-checkbox>
+            <a-checkbox v-model:checked="formState.remember">保持15天内免登录</a-checkbox>
           </a-form-item>
           <a-form-item>
             <a-button style="width: 100%" type="primary" html-type="submit">登 录</a-button>
@@ -56,12 +56,12 @@ export default {
     const onFinish = (values) => {
       const data = {
         username: values.username,
-        password: md5(values.password)
+        password: md5(values.password),
       }
       login(data).then(res => {
         if (res.code === 200) {
           if (values.remember) {
-            Cookies.set('Authorization', res.data.accessToken, { expires: 7 });
+            Cookies.set('Authorization', res.data.accessToken, { expires: 15 });
           } else {
             Cookies.remove('Authorization');
           }

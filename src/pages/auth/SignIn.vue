@@ -19,7 +19,7 @@
             <a-checkbox v-model:checked="formState.remember">保持15天内免登录</a-checkbox>
           </a-form-item>
           <a-form-item>
-            <a-button style="width: 100%" type="primary" html-type="submit">登 录</a-button>
+            <a-button style="width: 100%" type="primary" :loading="loading" html-type="submit">登 录</a-button>
           </a-form-item>
         </a-form>
       </div>
@@ -27,7 +27,7 @@
   </div>
 </template>
 <script>
-import { reactive } from 'vue';
+import { reactive, ref } from 'vue';
 import SignLeft from './SignLeft.vue';
 import { login, getUserInfo } from '@/api/auth'
 import md5 from 'md5';
@@ -43,6 +43,7 @@ export default {
       remember: true,
     });
     const router = useRouter();
+    const loading = ref(false);
 
     initAccount();
     function initAccount() {
@@ -58,7 +59,9 @@ export default {
         username: values.username,
         password: md5(values.password),
       }
+      loading.value = true;
       login(data).then(res => {
+        loading.value = false;
         if (res.code === 200) {
           if (values.remember) {
             Cookies.set('Authorization', res.data.accessToken, { expires: 15 });
@@ -71,6 +74,7 @@ export default {
           }
         }
       }).catch(error => {
+        loading.value = false;
         if (error.response.status === 412) {
           message.error(error.response.data.message);
         }
@@ -81,6 +85,7 @@ export default {
     };
     return {
       formState,
+      loading,
       onFinish,
       onFinishFailed,
       labelCol: { style: { width: "1px" } },

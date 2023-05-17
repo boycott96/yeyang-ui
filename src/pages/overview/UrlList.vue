@@ -4,13 +4,13 @@
   <div v-if="folders.length == 0" class="not-data">
     <a-result status="404" title="暂无数据" sub-title="无数据，请新建文件夹或通过PC端浏览器导入书签.">
       <template #extra>
-        <a-button type="primary">
+        <a-button type="primary" @click="createFolder">
           <span class="icon">
             <svg-icon icon-class="folder" />
           </span>
           <span>新建文件夹</span>
         </a-button>
-        <a-button type="primary">
+        <a-button type="primary" @click="createUrl">
           <span class="icon">
             <svg-icon icon-class="bookmark" />
           </span>
@@ -31,62 +31,64 @@
       <HightUrl :url-list="urlList" />
     </div>
   </div>
+  <UrlModal :visible="urlVisible" :title="urlTitle" @update-visible="updateUrlVisible" />
+  <FolderModal :visible="folderVisible" :title="folderTitle" @update-visible="updateFolderVisible" />
   <ExpandDrawer :visible="expandVisible" @close:drawer="closeExpand" @load:bookmarks="loadBookmarks" />
   <BookmarksModal :visible="bookmarksVisible" :bookmarks="bookmarks" @update:visible="updateBookmarksModal" />
 </template>
-<script>
+<script setup>
 import ExpandDrawer from '@/components/expand/ExpandDrawer.vue';
 import BookmarksModal from '@/components/modal/BookmarksModal.vue';
+import FolderModal from '@/components/modal/FolderModal.vue';
+import UrlModal from '@/components/modal/UrlModal.vue';
 import TabUl from './TabUl.vue';
 import { ref } from "vue";
 import HightUrl from './HightUrl.vue';
 import OperationTab from './OperationTab.vue';
+const folderTitle = ref('新建文件夹');
+const folderVisible = ref(false);
+const urlTitle = ref('新建书签');
+const urlVisible = ref(false);
 
-export default {
-  components: {
-    TabUl,
-    ExpandDrawer,
-    HightUrl,
-    OperationTab,
-    BookmarksModal
-  },
-  setup() {
-    const folders = ref([]);
-    const expandVisible = ref(false);
-    const activeKey = ref(folders.value.length > 0 ? folders.value[0].id : undefined);
-    const urlList = [];
-    const bookmarksVisible = ref(false);
-    const bookmarks = ref([]);
-    function updateData(params, index) {
-      urlList[index] = params
-    }
-    function updateActiveKey(e) {
-      activeKey.value = e;
-    }
-    function updateFolders(arr) {
-      folders.value = arr;
-    }
-    function importBrowser() {
-      expandVisible.value = true;
-    }
-    function closeExpand() {
-      expandVisible.value = false;
-    }
-    function loadBookmarks(val) {
-      bookmarksVisible.value = true;
-      bookmarks.value = val;
-    }
-    function updateBookmarksModal(e) {
-      console.log(e);
-      bookmarksVisible.value = e;
-    }
-    return {
-      urlList, updateData, folders, activeKey,
-      updateActiveKey, updateFolders, importBrowser, expandVisible, closeExpand, loadBookmarks, bookmarksVisible, updateBookmarksModal, bookmarks
-    };
-  },
-};
-</script>
+const folders = ref([]);
+const expandVisible = ref(false);
+const activeKey = ref(folders.value.length > 0 ? folders.value[0].id : undefined);
+const urlList = [];
+const bookmarksVisible = ref(false);
+const bookmarks = ref([]);
+function updateActiveKey(e) {
+  activeKey.value = e;
+}
+function updateFolders(arr) {
+  folders.value = arr;
+}
+function importBrowser() {
+  expandVisible.value = true;
+}
+function closeExpand() {
+  expandVisible.value = false;
+}
+function loadBookmarks(val) {
+  bookmarksVisible.value = true;
+  bookmarks.value = val;
+}
+function updateBookmarksModal(e) {
+  console.log(e);
+  bookmarksVisible.value = e;
+}
+function createFolder() {
+  folderVisible.value = true;
+}
+function createUrl() {
+  urlVisible.value = true;
+}
+function updateFolderVisible(e) {
+  folderVisible.value = e;
+}
+function updateUrlVisible(e) {
+  urlVisible.value = e;
+}
+</script >
 <style lang="less" scoped>
 .not-data {
   .icon {

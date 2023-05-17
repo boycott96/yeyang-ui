@@ -35,6 +35,7 @@ import {
   Popover,
   Anchor,
   List,
+  Tree,
 } from "ant-design-vue";
 
 // 请求拦截器
@@ -92,6 +93,7 @@ app.use(router)
   .use(Popover)
   .use(Anchor)
   .use(List)
+  .use(Tree)
   .component("svg-icon", SvgIcon);
 
 app.mount('#app');

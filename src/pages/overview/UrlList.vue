@@ -1,12 +1,27 @@
 <template>
   <TabUl :active-key="activeKey" :folders="folders" @update:active-key="updateActiveKey"
     @update:folders="updateFolders" />
-  <div v-if="folders.length == 0">
-    <a-result status="404" title="暂无数据" sub-title="无数据，请新建文件夹和新建导航标签.">
+  <div v-if="folders.length == 0" class="not-data">
+    <a-result status="404" title="暂无数据" sub-title="无数据，请新建文件夹或通过PC端浏览器导入书签.">
       <template #extra>
-        <a-button type="primary">新建文件夹</a-button>
-        <a-button type="primary">新建书签</a-button>
-        <a-button type="primary" @click="importBrowser">导入浏览器标签</a-button>
+        <a-button type="primary">
+          <span class="icon">
+            <svg-icon icon-class="folder" />
+          </span>
+          <span>新建文件夹</span>
+        </a-button>
+        <a-button type="primary">
+          <span class="icon">
+            <svg-icon icon-class="bookmark" />
+          </span>
+          <span>新建书签</span>
+        </a-button>
+        <a-button type="primary" @click="importBrowser">
+          <span class="icon">
+            <svg-icon icon-class="upload" />
+          </span>
+          <span>导入浏览器标签</span>
+        </a-button>
       </template>
     </a-result>
   </div>
@@ -16,10 +31,12 @@
       <HightUrl :url-list="urlList" />
     </div>
   </div>
-  <ExpandDrawer :visible="expandVisible" @close:drawer="closeExpand" />
+  <ExpandDrawer :visible="expandVisible" @close:drawer="closeExpand" @load:bookmarks="loadBookmarks" />
+  <BookmarksModal :visible="bookmarksVisible" :bookmarks="bookmarks" @update:visible="updateBookmarksModal" />
 </template>
 <script>
 import ExpandDrawer from '@/components/expand/ExpandDrawer.vue';
+import BookmarksModal from '@/components/modal/BookmarksModal.vue';
 import TabUl from './TabUl.vue';
 import { ref } from "vue";
 import HightUrl from './HightUrl.vue';
@@ -30,33 +47,16 @@ export default {
     TabUl,
     ExpandDrawer,
     HightUrl,
-    OperationTab
+    OperationTab,
+    BookmarksModal
   },
   setup() {
-    const folders = ref([
-      { id: 1, name: "搜索引擎1" },
-      { id: 2, name: "搜索引擎2" },
-    ]);
+    const folders = ref([]);
     const expandVisible = ref(false);
     const activeKey = ref(folders.value.length > 0 ? folders.value[0].id : undefined);
-    const urlList = [
-      {
-        name: "百度",
-        url: "https://www.baidu.com",
-        like: { value: 9898, active: 0 },
-        share: { value: 91, active: 0 },
-        star: { value: 675, active: 1 },
-        comment: { value: 898, active: 1 },
-      },
-      {
-        name: "必应",
-        url: "https://www.bing.com",
-        like: { value: 1000, active: 0 },
-        share: { value: 100, active: 0 },
-        star: { value: 10, active: 1 },
-        comment: { value: 1, active: 1 },
-      },
-    ];
+    const urlList = [];
+    const bookmarksVisible = ref(false);
+    const bookmarks = ref([]);
     function updateData(params, index) {
       urlList[index] = params
     }
@@ -72,14 +72,40 @@ export default {
     function closeExpand() {
       expandVisible.value = false;
     }
+    function loadBookmarks(val) {
+      bookmarksVisible.value = true;
+      bookmarks.value = val;
+    }
+    function updateBookmarksModal(e) {
+      console.log(e);
+      bookmarksVisible.value = e;
+    }
     return {
       urlList, updateData, folders, activeKey,
-      updateActiveKey, updateFolders, importBrowser, expandVisible, closeExpand
+      updateActiveKey, updateFolders, importBrowser, expandVisible, closeExpand, loadBookmarks, bookmarksVisible, updateBookmarksModal, bookmarks
     };
   },
 };
 </script>
 <style lang="less" scoped>
+.not-data {
+  .icon {
+    margin-right: 4px;
+
+    .svg-icon {
+      width: 16px;
+      height: 16px;
+    }
+  }
+
+  .ant-btn {
+    @media screen and (max-width: 518px) {
+      margin-bottom: 10px;
+      border-radius: 4px;
+    }
+  }
+}
+
 .url-list {
   background-color: #ffffff;
   border-radius: 8px 8px 0 0;

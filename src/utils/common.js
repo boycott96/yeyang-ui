@@ -56,3 +56,9 @@ export function getSystemOs() {
   const userAgent = navigator.userAgent;
   console.log(userAgent);
 }
+
+export function getScreenWidth() {
+  var screenWidth = window.innerWidth;
+  console.log(screenWidth + "像素");
+  return screenWidth;
+}

@@ -28,10 +28,7 @@ import UrlList from "./UrlList.vue";
 export default {
   components: { UrlList, UrlModal, FolderModal },
   setup() {
-    const likeUrlList = ref([
-      { name: '百度', url: 'https://www.baidu.com', favicon: 'https://www.baidu.com/favicon.ico' },
-      { name: '百度', url: 'https://www.baidu.com', favicon: 'https://www.baidu.com/favicon.ico' },
-    ]);
+    const likeUrlList = ref([]);
     const urlVisible = ref(false);
     const urlTitle = ref('新建书签');
     const folderVisible = ref(false);
@@ -61,9 +58,15 @@ export default {
 <style lang="less">
 .overview {
   margin: 0 auto;
+  height: calc(100vh - 64px);
+
+  .yy-row.view {
+    height: 100%;
+  }
 
   @media screen and (max-width: 1024px) {
     padding: 0 20px;
+    height: calc(100vh - 80px);
 
     .yy-row.view {
       display: block;
@@ -78,6 +81,7 @@ export default {
     }
 
     @media screen and (max-width: 1024px) {
+      margin-top: 16px;
       padding-top: 0;
       width: 100%;
 
@@ -99,11 +103,11 @@ export default {
   }
 
   .view-right {
-    padding: 0 16px;
-    padding-top: 12px;
+    padding: 12px 0 16px 16px;
 
     @media screen and (max-width: 1024px) {
-      width: 100%;
+      padding: 12px 0 0;
+      width: 100% !important;
     }
   }
 }

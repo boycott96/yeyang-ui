@@ -1,14 +1,15 @@
 <template>
   <div class="browser">
-    <div class="left">
-      <div class="h1-explain-title" id="export-explain">一、导出浏览器书签</div>
+    <div class="left" :class="{ 'full-width': size === 'default' }">
+      <div class="h1-explain-title" id="export-explain">一、PC端导出浏览器书签</div>
       <div class="h1-body" :style="{ 'max-height': height }">
         <div class="h2-explain-title" id="open-bookmark">1. 打开书签管理器</div>
-        <div class="h3-explain-title">
+        <div v-if="getKeyBoard(os) != null" class="h3-explain-title">
           方法1: 通过快捷键方式 <span class="key-symbol">{{ getKeyBoard(os) }}</span> 打开书签管理器
         </div>
         <div class="h3-explain-title">
-          方法2: 通过下列截图的方式进行打开书签管理器
+          <template v-if="getKeyBoard(os) != null">方法2: </template>
+          通过下列截图的方式进行打开书签管理器
         </div>
         <div class="explain-line">在主页面，点击【自定义及控制】图标。</div>
         <div class="explain-image">
@@ -37,19 +38,19 @@
       </div>
       <div class="h1-explain-title" id="import-explain">二、导入书签</div>
       <div class="h1-body">
-        <a-upload-dragger v-model:fileList="fileList" name="file" :multiple="true"
-          action="https://www.mocky.io/v2/5cc8019d300000980a055e76" @change="handleChange" @drop="handleDrop">
+        <a-upload-dragger v-model:fileList="fileList" name="file" :customRequest="handleUpload" @change="handleChange"
+          @drop="handleDrop">
           <p class="ant-upload-drag-icon">
             <svg-icon style="width: 50px; height: 50px" icon-class="upload" />
           </p>
           <p class="ant-upload-text">单击或拖动文件到此区域进行上传</p>
           <p class="ant-upload-hint">
-            支持单个或批量上传浏览器的书签
+            仅支持上传单个浏览器的书签
           </p>
         </a-upload-dragger>
       </div>
     </div>
-    <div class="right">
+    <div v-if="size === 'large'" class="right">
       <a-anchor :target-offset="targetOffset" style="position: absolute">
         <a-anchor-link href="#export-explain" title="导出">
           <a-anchor-link href="#open-bookmark" title="打开书签管理器" />
@@ -66,10 +67,16 @@ import { message } from 'ant-design-vue';
 import platform from "platform";
 
 export default {
-  setup() {
+  props: {
+    size: {
+      default: 'large',
+      type: String
+    }
+  },
+  setup(_props, ctx) {
     // 获取浏览器信息
+    const fileList = ref([]);
     const os = ref(platform.os.family);
-    console.log(platform.os);
     const targetOffset = ref(undefined);
     const height = ref('250px');
     onMounted(() => {
@@ -92,14 +99,136 @@ export default {
     function getKeyBoard(systemOs) {
       if (systemOs == 'OS X') {
         return '⌥ + ⌘ + B';
+      } else if (systemOs == 'Windows') {
+        return 'ctrl + shift + O'
+      } else {
+        return null
       }
     }
+    function handleUpload(info) {
+      // 处理自定义上传书签数据
+      const { file } = info;
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        var htmlContent = e.target.result;
+        // 解析 HTML 内容为 JSON
+        var parser = new DOMParser();
+        var doc = parser.parseFromString(htmlContent, 'text/html');
+
+        var bookmarks = processFolder(doc);
+
+        // 将树形json结构，转换为数组结构
+        var arrayBookmarks = flattenTree(bookmarks);
+
+        // 过滤空书签的文件夹
+        const result = [];
+        arrayBookmarks.forEach(item => {
+          if (item.children.length > 0) {
+            var children = appendSuffixToDuplicate(item.children);
+            result.push({ key: item.key, title: item.title, children: children })
+          }
+        })
+        // 进行文件夹重复名称追加后缀
+        ctx.emit('load:bookmarks', appendSuffixToDuplicate(result));
+        clearUpload();
+      }
+      reader.readAsText(file);
+    }
+    function clearUpload() {
+      fileList.value = [];
+    }
+    // 解析 HTML 内容为 JSON 的函数
+    function processFolder(doc) {
+      // 获取书签根元素并遍历所有子元素
+      var rootElement = doc.querySelector('body');
+      var childNodes = rootElement.childNodes;
+      var bookmarks = {
+        key: `folder_书签`,
+        title: '书签',
+        children: [],
+        folders: []
+      };
+      for (var i = 0; i < childNodes.length; i++) {
+        // eslint-disable-next-line no-debugger
+        processBookmark(childNodes[i], bookmarks);
+      }
+
+      // 返回书签根对象作为 JSON 数据
+      return bookmarks;
+    }
+
+    // 递归函数用于处理文件夹和书签元素
+    function processBookmark(node, parentFolder) {
+      // 判断下面的结构中是否还存在H3的标签，若不存在，则为一个文件夹下
+      if (node != null && node.nodeName != '#text') {
+        var h3 = node.querySelector('h3');
+        if (h3) {
+          var folder = { key: `folder_` + h3.textContent, title: h3.textContent, createDate: h3.getAttribute('add_date'), children: [], folders: [] };
+          var childNodes = node.childNodes;
+          for (var i = 0; i < childNodes.length; i++) {
+            if (childNodes[i].nodeName === 'DL' || childNodes[i].nodeName === 'DT') {
+              processBookmark(childNodes[i], folder);
+            }
+          }
+          parentFolder.folders.push(folder);
+        } else {
+          if (node.nodeName === 'DT') {
+            var a = node.querySelector('a');
+            parentFolder.children.push({ key: `url_` + a.textContent, title: a.textContent, createDate: a.getAttribute('add_date'), icon: a.getAttribute('icon'), href: a.getAttribute('href') })
+          } else if (node.nodeName === 'DL') {
+            var childNodes1 = node.childNodes;
+            for (var j = 0; j < childNodes1.length; j++) {
+              if (childNodes1[j].nodeName === 'DT') {
+                var a1 = childNodes1[j].querySelector('a');
+                parentFolder.children.push({ key: `url_` + a1.textContent, title: a1.textContent, createDate: a1.getAttribute('add_date'), icon: a1.getAttribute('icon'), href: a1.getAttribute('href') })
+              }
+            }
+          }
+        }
+      }
+    }
+
+    function flattenTree(tree) {
+      var result = [];
+      function traverse(node) {
+        result.push(node);
+        if (Array.isArray(node.folders)) {
+          node.folders.forEach(function (folder) {
+            traverse(folder);
+          })
+        }
+      }
+      traverse(tree);
+      return result;
+    }
+    /**
+     * 对具有相同名称，进行追加后缀
+     * @param {title, key} arr 参数
+     */
+    function appendSuffixToDuplicate(arr) {
+      const nameCounts = {};
+
+      for (let i = 0; i < arr.length; i++) {
+        const name = arr[i].key;
+
+        if (nameCounts[name]) {
+          const count = nameCounts[name];
+          const suffixedName = `${name}_${count}`;
+          arr[i].key = suffixedName;
+          nameCounts[name] += 1;
+        } else {
+          nameCounts[name] = 1;
+        }
+      }
+      return arr;
+    }
+
     return {
-      targetOffset, height, expandClick, fileList: ref([]),
+      targetOffset, height, expandClick, fileList,
       handleChange, handleDrop: (e) => {
         console.log(e);
       },
-      os, getKeyBoard
+      os, getKeyBoard, handleUpload
     }
   }
 }
@@ -107,6 +236,10 @@ export default {
 <style lang="less" scoped>
 .browser {
   display: flex;
+
+  .full-width {
+    width: 100% !important;
+  }
 
   .left {
     width: calc(100% - 150px);

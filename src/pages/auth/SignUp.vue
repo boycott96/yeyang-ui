@@ -1,6 +1,6 @@
 <template>
   <div class="sign">
-    <SignLeft title="使用Yy更有效的处理您的书签" />
+    <SignLeft title="" />
     <div class="sign-right">
       <div class="form">
         <div class="title">注册</div>

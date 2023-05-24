@@ -12,7 +12,7 @@
           </i>
           <div class="li-title">
             <a-input :ref="el => refEvent(el, index)" style="width: 100px" v-if="item.edit" v-model:value="item.name"
-              v-on:blur="onblur(item)" />
+              v-on:blur="onblur(item)" @pressEnter="onblur(item)" />
             <span v-else>{{ item.name }}</span>
           </div>
           <a-popover v-model:visible="item.visible" placement="bottom" trigger="click">
@@ -27,7 +27,7 @@
                 <span class="yy-icon">
                   <svg-icon icon-class="delete" />
                 </span>
-                <span>删除视图</span>
+                <span>删除文件夹</span>
               </div>
             </template>
             <div v-if="activeKey == item.id" class="li-operation">
@@ -61,15 +61,15 @@
       <a-popover v-model:visible="allViewVisible" placement="bottom" trigger="click">
         <template #content>
           <div class="search-foler">
-            <a-input v-model:value="folderName" placeholder="搜索">
+            <a-input v-model:value="folderName" @pressEnter="enterClick" placeholder="搜索">
               <template #prefix>
                 <svg-icon icon-class="search" />
               </template>
             </a-input>
           </div>
           <div class="all-view">
-            <div v-for="(item, index) in folders" :key="index" class="li-folder" :class="{ active: activeKey == item.id }"
-              @click="tabClick(item, index)">
+            <div v-for="(item, index) in searchFolderName()" :key="index" class="li-folder"
+              :class="{ active: activeKey == item.id }" @click="tabClick(item, index)">
               <div class="li-left">
                 <div class="drag">
                   <svg-icon icon-class="drag" />
@@ -121,7 +121,7 @@
     </div>
     <div class="tab-add">
       <span class="tab-line"></span>
-      <button class="yy-button-text">
+      <button class="yy-button-text" @click="addFolder">
         <svg-icon icon-class="add" />
       </button>
     </div>
@@ -129,12 +129,13 @@
 </template>
 <script>
 import { nextTick, ref } from "vue";
-import { Modal } from 'ant-design-vue';
+import { Modal, message } from 'ant-design-vue';
+import { deleteFolder, editFolder } from "@/api/folder";
 
 export default {
   props: {
     activeKey: {
-      type: Number,
+      type: String,
     },
     folders: {
       type: Array,
@@ -144,6 +145,7 @@ export default {
     const folderName = ref('');
     const allViewVisible = ref(false);
     const ulScrollbar = ref();
+    const viewFolders = ref();
     // created
     if (ulScrollbar.value != undefined) {
       checkExpandClick();
@@ -246,6 +248,7 @@ export default {
     function onblur(item) {
       item.edit = false;
       item.edit1 = false;
+      updateFolderName(item);
     }
     function refEvent(el, index) {
       domRef.value[index] = el;
@@ -255,28 +258,61 @@ export default {
     }
     function deleteClick(item, index) {
       item.visible = false;
-      console.log(index);
       Modal.confirm({
         title: '删除文件夹',
         content: `确认要删除文件夹“${item.name}”吗?`,
         onOk() {
-          const folderArr = props.folders;
-          folderArr.splice(index, 1);
-          if (folderArr.length > 0) {
-            ctx.emit('update:active-key', folderArr[0].id)
-          }
-          ctx.emit('update:folders', folderArr);
-          checkExpandClick();
+
+          deleteFolder(item.id).then(res => {
+            if (res.code !== 200) {
+              message.error(res.message);
+            }
+            const folderArr = props.folders;
+            folderArr.splice(index, 1);
+            if (folderArr.length > 0) {
+              ctx.emit('update:active-key', folderArr[index - 1].id)
+            }
+            ctx.emit('update:folders', folderArr);
+            checkExpandClick();
+          });
         },
         cancelText: '取消',
         okText: '删除',
       });
     }
+    function updateFolderName(val) {
+      editFolder({ id: val.id, name: val.name }).then(res => {
+        console.log(res);
+      })
+    }
+    function addFolder() {
+      ctx.emit('add-folder')
+    }
+    function searchFolderName() {
+      if (folderName.value != '') {
+        return props.folders.filter(item => {
+          return item.name.includes(folderName.value)
+        });
+      } else {
+        return props.folders;
+      }
+    }
+    function enterClick() {
+      const arr = searchFolderName();
+      tabClick(arr[0], 0);
+    }
     return {
+      // 变量
+      viewFolders,
       tabHover, tabLeave, tabClick, allViewVisible, ulScrollbar,
       rightClick, rightShow, leftShow, leftClick, checkExpandClick,
       editClick, onblur, domRef, refEvent, deleteClick, editClick1, refEvent1,
-      folderName
+      folderName,
+      // 方法
+      updateFolderName,
+      addFolder,
+      searchFolderName,
+      enterClick
     };
   },
 };
@@ -569,6 +605,7 @@ export default {
 .search-foler {
   padding-top: 12px;
   margin: 0 12px;
+  width: 286px;
 
   .svg-icon {
     width: 18px;

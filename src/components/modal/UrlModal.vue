@@ -28,82 +28,107 @@
         </a-form>
     </a-modal>
 </template>
-<script setup>
-import { ref, reactive, defineProps, defineEmits } from 'vue';
+<script>
+import { ref, reactive } from 'vue';
 import { PlusOutlined, LoadingOutlined } from '@ant-design/icons-vue';
 import { message } from 'ant-design-vue';
-defineProps({
-    visible: {
-        type: Boolean,
-        default: false
+export default {
+    components: { PlusOutlined, LoadingOutlined },
+    props: {
+        visible: {
+            type: Boolean,
+            default: false
+        },
+        title: {
+            type: String,
+            default: '书签'
+        },
+        folder: {
+            type: String,
+            default: '',
+        }
     },
-    title: {
-        type: String,
-        default: '书签'
-    }
-})
-const emit = defineEmits(['update-visible']);
-const options = [];
-function getBase64(img, callback) {
-    const reader = new FileReader();
-    reader.addEventListener('load', () => callback(reader.result));
-    reader.readAsDataURL(img);
-}
-const formRef = ref();
-/** constant var */
-const confirmLoading = ref(false);
-// form
-const formState = reactive({
-    url: '',
-    icon: '',
-    name: '',
-})
-const fileList = ref([]);
-const loading = ref(false);
-const imageUrl = ref('');
+    setup(_props, ctx) {
+        const options = [];
+        function getBase64(img, callback) {
+            const reader = new FileReader();
+            reader.addEventListener('load', () => callback(reader.result));
+            reader.readAsDataURL(img);
+        }
+        const formRef = ref();
+        /** constant var */
+        const confirmLoading = ref(false);
+        // form
+        const formState = reactive({
+            url: '',
+            icon: '',
+            name: '',
+        })
+        const fileList = ref([]);
+        const loading = ref(false);
+        const imageUrl = ref('');
 
-/** method */
-function handleOk() {
-    confirmLoading.value = true;
-    setTimeout(() => {
-        confirmLoading.value = false;
-    }, 2000);
-}
-function updateVisible(e) {
-    emit('update-visible', e)
-}
-function onFinish(values) {
-    console.log(values);
-}
-function onFinishFailed(errorInfo) {
-    console.log(errorInfo);
-}
-function handleChange(info) {
-    if (info.file.status === 'uploading') {
-        loading.value = true;
-        return;
+        /** method */
+        function handleOk() {
+            confirmLoading.value = true;
+            setTimeout(() => {
+                confirmLoading.value = false;
+            }, 2000);
+        }
+        function updateVisible(e) {
+            ctx.emit('update-visible', e)
+        }
+        function onFinish(values) {
+            console.log(values);
+        }
+        function onFinishFailed(errorInfo) {
+            console.log(errorInfo);
+        }
+        function handleChange(info) {
+            if (info.file.status === 'uploading') {
+                loading.value = true;
+                return;
+            }
+            if (info.file.status === 'done') {
+                // Get this url from response in real world.
+                getBase64(info.file.originFileObj, (base64Url) => {
+                    imageUrl.value = base64Url;
+                    loading.value = false;
+                });
+            }
+            if (info.file.status === 'error') {
+                loading.value = false;
+                message.error('upload error');
+            }
+        }
+        function beforeUpload(file) {
+            const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
+            if (!isJpgOrPng) {
+                message.error('You can only upload JPG file!');
+            }
+            const isLt2M = file.size / 1024 / 1024 < 2;
+            if (!isLt2M) {
+                message.error('Image must smaller than 2MB!');
+            }
+            return isJpgOrPng && isLt2M;
+        }
+        return {
+            // 参数
+            options,
+            formRef,
+            formState,
+            fileList,
+            confirmLoading,
+            imageUrl,
+            loading,
+            // 方法
+            handleOk,
+            updateVisible,
+            onFinish,
+            onFinishFailed,
+            handleChange,
+            beforeUpload
+        }
     }
-    if (info.file.status === 'done') {
-        // Get this url from response in real world.
-        getBase64(info.file.originFileObj, (base64Url) => {
-            imageUrl.value = base64Url;
-            loading.value = false;
-        });
-    }
-    if (info.file.status === 'error') {
-        loading.value = false;
-        message.error('upload error');
-    }
-}
-function beforeUpload(file) {
-    const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
-    if (!isJpgOrPng) {
-        message.error('You can only upload JPG file!');
-    }
-    const isLt2M = file.size / 1024 / 1024 < 2;
-    if (!isLt2M) {
-        message.error('Image must smaller than 2MB!');
-    }
-    return isJpgOrPng && isLt2M;
 }
 </script >

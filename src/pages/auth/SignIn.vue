@@ -1,6 +1,6 @@
 <template>
   <div class="sign">
-    <SignLeft title="主人，欢迎回来！" />
+    <SignLeft title="" />
     <div class="sign-right">
       <div class="form">
         <div class="title">登录</div>

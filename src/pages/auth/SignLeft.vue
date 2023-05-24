@@ -28,6 +28,10 @@ export default {
   flex-direction: column;
   position: relative;
 
+  @media screen and (max-width: 1020px) {
+    display: none;
+  }
+
   .left-backgroud {
     top: 0px;
     left: 0px;

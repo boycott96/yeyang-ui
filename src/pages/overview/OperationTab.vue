@@ -3,7 +3,7 @@
     <div class="group">
       <div class="primary text-button">
         <span class="universe-icon"><svg-icon icon-class="add-circle" /></span>
-        <span class="text">添加记录</span>
+        <span class="text" @click="addWebsite">添加网址</span>
       </div>
     </div>
     <div class="group">
@@ -42,8 +42,13 @@
 </template>
 <script>
 export default {
-  setup() {
-
+  setup(_props, ctx) {
+    function addWebsite() {
+      ctx.emit('add-website');
+    }
+    return {
+      addWebsite
+    }
   }
 }
 </script>

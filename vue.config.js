@@ -12,18 +12,12 @@ module.exports = defineConfig({
     port: 8080,
     proxy: {
       "/api": {
-        target: "http://47.111.178.168:9100",
-        // target: "http://localhost:9100",
+        // target: "http://47.111.178.168:9100",
+        target: "http://localhost:9100",
         pathRewrite: {'^/api': '/'},
         ws: true,
         changeOrigin: true,
       },
-      "/bookmark": {
-        target: "http://localhost:9011",
-        pathRewrite: {'^/api': '/'},
-        ws: true,
-        changeOrigin: true,
-      }
     },
   },
   chainWebpack(config) {

@@ -1,36 +1,40 @@
 <template>
-  <TabUl :active-key="activeKey" :folders="folders" @update:active-key="updateActiveKey"
-    @update:folders="updateFolders" @add-folder="updateFolderVisible(true)"/>
-  <div v-if="folders.length == 0" class="not-data">
-    <a-result status="404" title="暂无数据" sub-title="无数据，请新建文件夹或通过PC端浏览器导入书签.">
-      <template #extra>
-        <a-button type="primary" @click="createFolder">
-          <span class="icon">
-            <svg-icon icon-class="folder" />
-          </span>
-          <span>新建文件夹</span>
-        </a-button>
-        <a-button type="primary" @click="createUrl">
-          <span class="icon">
-            <svg-icon icon-class="bookmark" />
-          </span>
-          <span>新建书签</span>
-        </a-button>
-        <a-button type="primary" @click="importBrowser">
-          <span class="icon">
-            <svg-icon icon-class="upload" />
-          </span>
-          <span>导入浏览器标签</span>
-        </a-button>
-      </template>
-    </a-result>
-  </div>
-  <div v-else class="url-list" :class="{ 'first-view': folders.length > 0 ? activeKey == folders[0].id : false }">
-    <OperationTab @add-website="onAddWebsite" />
-    <div class="content">
-      <HightUrl :url-list="urlList" />
+  <YyLoading v-if="loading" :visible="loading" />
+  <div v-else>
+    <TabUl :active-key="activeKey" :folders="folders" @update:active-key="updateActiveKey" @update:folders="updateFolders"
+      @add-folder="updateFolderVisible(true)" />
+    <div v-if="folders.length == 0" class="not-data">
+      <a-result status="404" title="暂无数据" sub-title="无数据，请新建文件夹或通过PC端浏览器导入书签.">
+        <template #extra>
+          <a-button type="primary" @click="createFolder">
+            <span class="icon">
+              <svg-icon icon-class="folder" />
+            </span>
+            <span>新建文件夹</span>
+          </a-button>
+          <a-button type="primary" @click="createUrl">
+            <span class="icon">
+              <svg-icon icon-class="bookmark" />
+            </span>
+            <span>新建书签</span>
+          </a-button>
+          <a-button type="primary" @click="importBrowser">
+            <span class="icon">
+              <svg-icon icon-class="upload" />
+            </span>
+            <span>导入浏览器标签</span>
+          </a-button>
+        </template>
+      </a-result>
+    </div>
+    <div v-else class="url-list" :class="{ 'first-view': folders.length > 0 ? activeKey == folders[0].id : false }">
+      <OperationTab @add-website="onAddWebsite" />
+      <div class="content">
+        <HightUrl :url-list="urlList" />
+      </div>
     </div>
   </div>
+
   <UrlModal :visible="urlVisible" :title="urlTitle" @update-visible="updateUrlVisible" />
   <FolderModal :visible="folderVisible" :title="folderTitle" @update-visible="updateFolderVisible" />
   <ExpandDrawer :visible="expandVisible" @close:drawer="closeExpand" @load:bookmarks="loadBookmarks" />
@@ -41,6 +45,7 @@ import ExpandDrawer from '@/components/expand/ExpandDrawer.vue';
 import BookmarksModal from '@/components/modal/BookmarksModal.vue';
 import FolderModal from '@/components/modal/FolderModal.vue';
 import UrlModal from '@/components/modal/UrlModal.vue';
+import YyLoading from '@/layouts/YyLoading.vue';
 import TabUl from './TabUl.vue';
 import { ref } from "vue";
 import HightUrl from './HightUrl.vue';
@@ -49,13 +54,16 @@ import { listFolder } from '@/api/folder';
 import { message } from 'ant-design-vue';
 export default {
   components: {
-    ExpandDrawer, BookmarksModal, FolderModal, UrlModal, TabUl, HightUrl, OperationTab
+    ExpandDrawer, BookmarksModal, FolderModal, UrlModal, TabUl,
+    HightUrl, OperationTab,
+    YyLoading
   },
   setup() {
     const folderTitle = ref('新建文件夹');
     const folderVisible = ref(false);
     const urlTitle = ref('新建书签');
     const urlVisible = ref(false);
+    const loading = ref(true);
 
     const folders = ref([]);
     const expandVisible = ref(false);
@@ -68,12 +76,12 @@ export default {
       listFolder().then(res => {
         folders.value = res.data;
         updateActiveKey(folders.value[0].id);
+        loading.value = false;
       }).catch(error => {
         message.error(error.response.data.message);
       })
     }
     function updateActiveKey(e) {
-      console.log(e);
       activeKey.value = e;
     }
     function updateFolders(arr) {
@@ -90,7 +98,6 @@ export default {
       bookmarks.value = val;
     }
     function updateBookmarksModal(e) {
-      console.log(e);
       bookmarksVisible.value = e;
     }
     function createFolder() {
@@ -121,6 +128,7 @@ export default {
       expandVisible,
       bookmarksVisible,
       bookmarks,
+      loading,
 
       // 方法
       updateActiveKey,

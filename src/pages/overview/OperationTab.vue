@@ -1,39 +1,31 @@
 <template>
   <div class="operate-tab">
     <div class="group">
-      <div class="primary text-button">
+      <div class="primary text-button" @click="addWebsite">
         <span class="universe-icon"><svg-icon icon-class="add-circle" /></span>
-        <span class="text" @click="addWebsite">添加网址</span>
+        <span v-if="wideScreenFlag" class="text">添加网址</span>
       </div>
     </div>
     <div class="group">
       <div class="button-row">
         <div class="text-button">
           <span class="universe-icon"><svg-icon icon-class="filter" /></span>
-          <span class="text">筛选</span>
+          <span v-if="wideScreenFlag" class="text">筛选</span>
         </div>
         <div class="text-button">
           <span class="universe-icon"><svg-icon icon-class="layout" /></span>
-          <span class="text">布局</span>
+          <span v-if="wideScreenFlag" class="text">布局</span>
         </div>
       </div>
     </div>
     <div class="group">
       <div class="button-row">
-        <div class="text-button">
-          <span class="universe-icon"><svg-icon icon-class="thumb-up" /></span>
+        <div v-if="wideScreenFlag" class="text-button">
+          <span class="universe-icon"><svg-icon icon-class="view" /></span>
           <span class="text">1000</span>
         </div>
         <div class="text-button">
           <span class="universe-icon"><svg-icon icon-class="star" /></span>
-          <span class="text">1000</span>
-        </div>
-        <div class="text-button">
-          <span class="universe-icon"><svg-icon icon-class="share" /></span>
-          <span class="text">1000</span>
-        </div>
-        <div class="text-button">
-          <span class="universe-icon"><svg-icon icon-class="comment" /></span>
           <span class="text">1000</span>
         </div>
       </div>
@@ -41,13 +33,17 @@
   </div>
 </template>
 <script>
+import { getScreenWidth } from '@/utils/common';
+
 export default {
   setup(_props, ctx) {
+    const wideScreenFlag = getScreenWidth() > 490;
     function addWebsite() {
       ctx.emit('add-website');
     }
     return {
-      addWebsite
+      addWebsite,
+      wideScreenFlag
     }
   }
 }

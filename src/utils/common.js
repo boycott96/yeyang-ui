@@ -18,7 +18,9 @@ export function focusAndOpenKeyboard(el, timeout) {
     // The keyboard is open. Now do a delayed focus on the target element
     setTimeout(function () {
       el.focus();
-      el.click();
+      if (el.click) {
+        el.click();
+      }
       // Remove the temp element
       document.body.removeChild(__tempEl__);
     }, timeout);
@@ -59,6 +61,51 @@ export function getSystemOs() {
 
 export function getScreenWidth() {
   var screenWidth = window.innerWidth;
-  console.log(screenWidth + "像素");
   return screenWidth;
+}
+// 防抖函数
+export function debounce(func, delay) {
+  let timeoutId;
+
+  return function () {
+    const context = this;
+    const args = arguments;
+
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(function () {
+      func.apply(context, args);
+    }, delay);
+  };
+}
+// 严格匹配URL格式
+export function isValidURL(url) {
+  const pattern = new RegExp('^(https?:\\/\\/)?' + // 协议
+    '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // 域名
+    '((\\d{1,3}\\.){3}\\d{1,3}))' + // IP 地址
+    '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // 端口和路径
+    '(\\?[;&a-z\\d%_.~+=-]*)?' + // 查询参数
+    '(\\#[-a-z\\d_]*)?$', 'i'); // 锚点
+
+  return pattern.test(url);
+}
+// 获取网页内容
+export function fetchHTML(url) {
+  // 创建一个 script 元素
+  const scriptElement = document.createElement('script');
+  // 设置 script 元素的 src 属性为目标 URL，并将回调函数名作为查询参数添加到 URL 中
+  scriptElement.src = `${url}?callback=handleHTMLResponse`;
+  scriptElement.id = 'url_info_html';
+  // 将 script 元素添加到页面中
+  document.body.appendChild(scriptElement);
+  console.log(scriptElement);
+  if (scriptElement) {
+    const scriptData = scriptElement.innerHTML;
+    console.log(scriptData);
+  }
+}
+
+// 全局回调函数
+export function handleHTMLResponse(response) {
+  // 处理 HTML 响应
+  console.log(response);
 }

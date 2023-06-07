@@ -110,7 +110,7 @@
           </div>
         </template>
         <div class="tab-bar-all-view">
-          <span class="text">全部文件夹</span>
+          <span class="text">全部</span>
           <i class="all-view-icon">
             <span class="universe-icon">
               <svg-icon icon-class="down-outlined" />
@@ -128,7 +128,7 @@
   </div>
 </template>
 <script>
-import { nextTick, ref } from "vue";
+import { nextTick, ref, watchEffect } from "vue";
 import { Modal, message } from 'ant-design-vue';
 import { deleteFolder, editFolder } from "@/api/folder";
 
@@ -147,11 +147,14 @@ export default {
     const ulScrollbar = ref();
     const viewFolders = ref();
     // created
-    if (ulScrollbar.value != undefined) {
-      checkExpandClick();
-      getAllChildrenWidth();
-    }
-
+    watchEffect(() => {
+      if (props.folders.length > 0) {
+        if (ulScrollbar.value != undefined) {
+          checkExpandClick();
+          getAllChildrenWidth();
+        }
+      }
+    })
     const scrollLocation = ref(0);
     const rightShow = ref(false);
     const leftShow = ref(false);

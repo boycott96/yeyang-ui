@@ -1,6 +1,6 @@
 <template>
     <a-modal :visible="visible" @update:visible="updateVisible" title="选择需要导入的书签" :confirm-loading="confirmLoading"
-        @ok="handleOk" okText="确定" cancelText="取消">
+        @ok="handleOk" okText="确定" cancelText="取消" :maskClosable="false">
         <a-tree v-model:checkedKeys="checkedKeys" checkable :tree-data="bookmarks">
             <template #title="{ title, key }">
                 <span v-if="key === '0-0-1-0'" style="color: #1890ff">{{ name }}</span>

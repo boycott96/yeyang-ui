@@ -15,3 +15,7 @@ export function editFolder(data) {
 export function deleteFolder(id) {
     return axios.delete('/api/bookmark/folder/delete/' + id);
 }
+
+export function selectFolder(params) {
+    return axios.get('/api/bookmark/select/folder', { params });
+}

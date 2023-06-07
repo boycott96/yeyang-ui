@@ -1,18 +1,19 @@
 <template>
   <a-modal :visible="visible" @update:visible="updateVisible" :title="title" :confirm-loading="confirmLoading"
-    @ok="handleOk" okText="确定" cancelText="取消">
+    @ok="handleOk" okText="确定" cancelText="取消" :maskClosable="false">
     <a-form ref="formRef" :model="folderForm" name="folderForm" :label-col="{ span: 4 }" :wrapper-col="{ span: 20 }"
       autocomplete="off">
       <a-form-item label="名称" name="name" :rules="[{ required: true, message: '请输入文件夹名称!' }]">
-        <a-input v-model:value="folderForm.name" />
+        <a-input ref="inputName" v-model:value="folderForm.name" @pressEnter="handleOk" />
       </a-form-item>
     </a-form>
   </a-modal>
 </template>
 <script>
 import { addFolder } from '@/api/folder';
+import { focusAndOpenKeyboard } from '@/utils/common';
 import { message } from 'ant-design-vue';
-import { ref, reactive } from 'vue';
+import { ref, reactive, watchEffect } from 'vue';
 
 export default {
   props: {
@@ -25,12 +26,18 @@ export default {
       default: '新建文件夹'
     }
   },
-  setup(_props, ctx) {
+  setup(props, ctx) {
     const confirmLoading = ref(false);
     const folderForm = reactive({
       name: '',
     });
     const formRef = ref();
+    const inputName = ref(null);
+    watchEffect(() => {
+      if (props.visible) {
+        focusAndOpenKeyboard(inputName.value);
+      }
+    })
 
     function handleOk() {
       formRef.value.validateFields('name').then(form => {
@@ -56,7 +63,7 @@ export default {
     }
 
     return {
-      confirmLoading, folderForm, handleOk, updateVisible, formRef
+      confirmLoading, folderForm, handleOk, updateVisible, formRef, inputName
     }
   },
 };
